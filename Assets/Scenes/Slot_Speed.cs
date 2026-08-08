@@ -4,9 +4,9 @@ public class Slot_Speed : MonoBehaviour
 {
     public static float slot_speed; //変数の宣言,staticにすることで他のスクリプトからもアクセス可能...だったはず
 
-     public void OnClickButton(int button_number) //ボタンが押された時の処理
+     public void OnClickButton(int button_speed) //ボタンが押された時の処理
     {
-        switch(button_number)
+        switch(button_speed)
         {
             case 1:
                 slot_speed = 0.5f; //遅め

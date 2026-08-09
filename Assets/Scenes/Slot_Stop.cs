@@ -5,6 +5,9 @@ public class Slot_Stop : MonoBehaviour
 {
     public RectTransform[] image_location; //画像の位置を取得するための変数
     public Slot_Spin[] slot_spin; //スロットの回転を止めるための変数
+    int slot_error = 0; //スロットのずれを格納する変数
+    int slot_error_min = 1000; //スロットのずれの最小値を格納する変数
+    string slot_flag = "false"; //スロットの回転を止めるためのフラグ
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -14,41 +17,40 @@ public class Slot_Stop : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (slot_flag == "true") //スロットの回転を止めるためのフラグが立っている場合
+        {
+            if (image_location[slot_error].anchoredPosition.y < -185.0f) //スロットのずれが真ん中より大きくなったら
+            {
+                StopSlot(slot_spin.Length); //スロットの回転を止める
+                slot_flag = "false"; //スロットの回転を止めるためのフラグを下ろす
+            }
+        }
         
     }
     public void OnClickButton() //ボタンが押された時の処理
     {
-        StopSlot(slot_spin.Length); //スロットを停止
-        Debug.Log("stop");
         int image_count = image_location.Length;
         List<float> image_center = new List<float>(); //画像の中心位置を格納するリスト
         for (int i = 0; i < image_count; i++)
         {
-            Debug.Log(image_location[i].anchoredPosition.y); //終了地点の確認
             image_center.Add(image_location[i].anchoredPosition.y + 185.0f); //画像の中心位置をリストに格納
-            Debug.Log(image_center[i]); //画像の中心位置の確認
+            Debug.Log(image_location[i].anchoredPosition.y + 185.0f); //画像の中心位置をデバッグログに出力
         }
-        image_center.Sort(); //画像の中心位置を昇順に並べ替え
-        image_center.Reverse(); //画像の中心位置を降順に並べ替え
+        //image_center.Sort(); //画像の中心位置を昇順に並べ替え
+        //image_center.Reverse(); //画像の中心位置を降順に並べ替え
         image_count = image_center.Count; //画像の数を取得
-        float slot_error = image_center[0]; //スロットのずれを格納する変数
         for (int i = 0; i < image_count; i++)
         {
-            if (image_center[i] > 0.0f && image_center[i] < slot_error) 
+            if (Mathf.Abs(image_center[i]) < slot_error_min && image_center[i] > 0) //画像の中心位置と真ん中の位置の差が最小値より小さい場合,Mathf.Absは絶対値を返す関数らしい
             {
-                slot_error = image_center[i]; //スロットのずれを更新する。ただし、0より大きく、かつ現在のずれより小さい場合のみ更新する
+                slot_error_min = (int) Mathf.Abs(image_center[i]); //最小値を更新
+                slot_error = i; //どのスロットが一番真ん中に近いかを格納
             }
         }
-        Debug.Log(slot_error); //スロットのずれの確認
-        float error_time = slot_error / Slot_Spin.spin_speed; //スロットのずれを修正するための時間を計算する 
-        RestartSlot(slot_spin.Length); //スロットを再開
-        float restart_time = 0.0f; //スロットの再開時間を格納する変数
-        while (restart_time < error_time) //スロットの再開時間がスロットのずれを修正するための時間より小さい間、ループする
-        {
-            restart_time += Time.deltaTime; //スロットの再開時間を更新する
-        }
-        StopSlot(slot_spin.Length); //スロットを停止
-        Debug.Log("stop");
+        Debug.Log(slot_error); //どのスロットが一番真ん中に近いか
+        Debug.Log(image_location[slot_error].anchoredPosition.y); //どのスロットが一番真ん中に近いかの位置
+        Slot_Speed.slot_speed = 0.03f; //スロットの回転速度を遅くする
+        slot_flag = "true"; //スロットの回転を止めるためのフラグを立てる
     }
     public void StopSlot(int n) //スロットの回転を止めるための関数
     {

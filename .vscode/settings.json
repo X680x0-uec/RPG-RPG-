@@ -67,6 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "RPG-RPG-.slnx",
+    "dotnet.defaultSolution": "RPG.slnx",
     "dotnet.enableWorkspaceBasedDevelopment": false
 }

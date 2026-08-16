@@ -23,7 +23,7 @@ public class Slot_Stop : MonoBehaviour
     {
         if (slot_flag == "true") //スロットの回転を止めるためのフラグが立っている場合
         {
-            if (image_location[slot_error].anchoredPosition.y < -185.0f) //スロットのずれが真ん中より大きくなったら
+            if (image_location[slot_error].anchoredPosition.y < -275.0f) //スロットのずれが真ん中より大きくなったら
             {
                 StopSlot(slot_spin.Length); //スロットの回転を止める
                 slot_flag = "false"; //スロットの回転を止めるためのフラグを下ろす
@@ -39,8 +39,8 @@ public class Slot_Stop : MonoBehaviour
         List<float> image_center = new List<float>(); //画像の中心位置を格納するリスト
         for (int i = 0; i < image_count; i++)
         {
-            image_center.Add(image_location[i].anchoredPosition.y + 185.0f); //画像の中心位置をリストに格納
-            Debug.Log(image_location[i].anchoredPosition.y + 185.0f); //画像の中心位置をデバッグログに出力
+            image_center.Add(image_location[i].anchoredPosition.y + 275.0f); //画像の中心位置をリストに格納
+            Debug.Log(image_location[i].anchoredPosition.y + 275.0f); //画像の中心位置をデバッグログに出力
         }
         //image_center.Sort(); //画像の中心位置を昇順に並べ替え
         //image_center.Reverse(); //画像の中心位置を降順に並べ替え

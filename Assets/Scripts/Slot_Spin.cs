@@ -4,7 +4,7 @@ public class Slot_Spin : MonoBehaviour
 {
     public static float spin_speed = 1.0f * 300;//Slot_Speed.slot_speed;//変数の宣言
     public Vector2 restart_position ;
-    public float loop_hight = 500.0f;
+    public float loop_hight = 250.0f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

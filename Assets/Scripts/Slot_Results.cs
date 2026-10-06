@@ -53,4 +53,6 @@ public class Slot_Results : MonoBehaviour
         }
         Debug.Log("attack=" + attack_count + ", block=" + block_count + ", heal=" + heal_count);
     }
+
 }
+

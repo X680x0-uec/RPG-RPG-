@@ -12,6 +12,8 @@ public class Slot_Stop : MonoBehaviour
     public int slot_error = 0; //スロットのずれを格納する変数
     int slot_error_min = 1000; //スロットのずれの最小値を格納する変数
     string slot_flag = "false"; //スロットの回転を止めるためのフラグ
+
+    [SerializeField] private float defaultSpeed = 1.0f; // ★追加: 通常回転時のデフォルトスピード
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -80,6 +82,11 @@ public class Slot_Stop : MonoBehaviour
     {
         isStopped = false;//スロットの回転が再開したのでisStoppedをfalseに戻す
         isResulted=false;//isResultedも同様にfalseに戻す
+        slot_flag = "false"; // ★追加: 停止用フラグも初期化する
+
+        // ★追加: 減速させた速度（0.03f）を元の回転速度に戻す
+        Slot_Speed.slot_speed = defaultSpeed;
+
         for (int i = 0; i < n; i++)
         {
             slot_spin[i].enabled = true; //その列のスロットの回転を再開する

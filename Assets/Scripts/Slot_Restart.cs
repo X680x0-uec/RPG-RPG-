@@ -4,13 +4,14 @@ public class Slot_Restart : MonoBehaviour
 {
     // インスペクターから全リールの Slot_Stop をセットします
     [SerializeField] private Slot_Stop[] allReels;
-
+    [SerializeField] private GameObject ButtonParent;
     /// <summary>
     /// 全てのリールを一括で再回転させるメソッド
     /// （UIボタンの OnClick に登録します）
     /// </summary>
     public void RestartAllSlots()
     {
+        ButtonParent.SetActive(false);
         if (allReels == null || allReels.Length == 0)
         {
             Debug.LogWarning("リールがアタッチされていません！");
@@ -28,5 +29,10 @@ public class Slot_Restart : MonoBehaviour
         }
 
         Debug.Log("すべてのスロットを再回転させました。");
+    }
+
+    public void RecreateButtons()
+    {
+        ButtonParent.SetActive(true);
     }
 }

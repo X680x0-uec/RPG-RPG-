@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 using TMPro;
 
 public class Player_Status : MonoBehaviour
@@ -15,10 +16,15 @@ public class Player_Status : MonoBehaviour
     [SerializeField] float heal_bonus; // healが三つそろった時のボーナス値
     [SerializeField] Enemy_Status enemy; // Enemy_Statusスクリプトの参照
     [SerializeField] Slot_Results slot_results; // Slot_Resultsスクリプトの参照
+    [SerializeField] Level_up Level_UP; // Level_upスクリプトの参照
     
     int attack_count; // attackが出た数
     int block_count; // blockが出た数
     int heal_count; // healが出た数
+    int attack_level_count;
+    int block_level_count;
+    int heal_level_count;
+    
 
     void Start()
     {
@@ -42,6 +48,23 @@ public class Player_Status : MonoBehaviour
     public void OnAllSlotsStopped()
     {
         GetSlotResults(); // 各カウント数の取得
+        int Level = Level_up.LevelUP_Ability.Count;
+        for (int i = 0; i < Level; i++)
+        {
+            int abilityIndex = Level_up.LevelUP_Ability[i];
+            switch (abilityIndex)
+            {
+                case 1:
+                    attack_level_count++;
+                    break;
+                case 2:
+                    block_level_count++;
+                    break;
+                case 3:
+                    heal_level_count++;
+                    break;
+            }
+        }
         if (heal_count > 0) // healの目が出た場合、回復
         {
             Heal(heal_count);
@@ -72,7 +95,7 @@ public class Player_Status : MonoBehaviour
             attack_count *= attack_bonus;
             Debug.Log("attackが三つそろった! 相手に大ダメージ!");
         }
-        int enemy_damage = attack_power * (attack_count + 1); 
+        int enemy_damage = attack_power * (attack_count + 1) + attack_level_count * 10; // 攻撃力の計算
         enemy.TakeDamege(enemy_damage);
     }
     
@@ -80,7 +103,7 @@ public class Player_Status : MonoBehaviour
     {
         if (block_count != 3)
         {
-            current_HP -= (int)(damage - damage * block_count * 0.2f);
+            current_HP -= (int)(damage - damage * block_count * 0.2f - block_level_count * 5); // ダメージ計算
         }
         current_HP = Mathf.Clamp(current_HP, 0, max_HP);
         UpdateHP(); // HPを更新
@@ -100,7 +123,7 @@ public class Player_Status : MonoBehaviour
             total_heal *= heal_bonus;
             Debug.Log("healが三つそろった!");
         }
-        current_HP += (int)total_heal;
+        current_HP += (int)total_heal + heal_level_count * 10; // 回復量の計算
         current_HP = Mathf.Clamp(current_HP, 0, max_HP);
         UpdateHP();
     }

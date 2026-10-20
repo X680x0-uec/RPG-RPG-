@@ -14,6 +14,8 @@ public class Enemy_Status : MonoBehaviour
     private int currentEnemyIndex = 0; // 現在の敵のインデックスを追跡する変数
     public static bool islevelup = false;
 
+    public Result resultManager; // Result スクリプトの参照
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -43,6 +45,19 @@ public class Enemy_Status : MonoBehaviour
         current_HP -= enemy_damage;//敵のHPからPlayerの攻撃力とattack_countの積を引く
         current_HP = Mathf.Clamp(current_HP, 0, max_HP);//HPが0～max_HPの範囲を超えないようにする
         UpdateHP();//HPを更新
+
+        if(current_HP <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        if(resultManager != null)
+        {
+            resultManager.ShowResult();
+        }
     }
     private void UpdateHP()
     {

@@ -47,6 +47,9 @@ public class Player_Status : MonoBehaviour
 
     public void OnAllSlotsStopped()
     {
+        attack_level_count = 0;
+        block_level_count = 0;
+        heal_level_count = 0;
         GetSlotResults(); // 各カウント数の取得
         int Level = Level_up.LevelUP_Ability.Count;
         for (int i = 0; i < Level; i++)
@@ -54,17 +57,18 @@ public class Player_Status : MonoBehaviour
             int abilityIndex = Level_up.LevelUP_Ability[i];
             switch (abilityIndex)
             {
-                case 1:
+                case 0:
                     attack_level_count++;
                     break;
-                case 2:
+                case 1:
                     block_level_count++;
                     break;
-                case 3:
+                case 2:
                     heal_level_count++;
                     break;
             }
         }
+        Debug.Log($"attack_level_count: {attack_level_count}, block_level_count: {block_level_count}, heal_level_count: {heal_level_count}");
         if (heal_count > 0) // healの目が出た場合、回復
         {
             Heal(heal_count);

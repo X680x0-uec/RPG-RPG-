@@ -10,8 +10,9 @@ public class Enemy_Status : MonoBehaviour
     [SerializeField] private Slider HP_bar;//HPバーの参照
     [SerializeField] TextMeshProUGUI HP_text;//HPテキストの参照
     [SerializeField] public int damage;//敵の攻撃力
-    public static List<int> Enemy_HP = new List<int>();
-    private int currentEnemyIndex = 0; // 現在の敵のインデックスを追跡する変数
+    public static List<int> Enemy_HP = new List<int> { 100, 200, 300, 400, 500 };//EnemyのHPリスト
+    public static List<int> Enemy_ATK = new List<int> {10 , 30 , 80 , 50 , 200 };//Enemyの攻撃力リスト
+    public static int currentEnemyIndex = 0; // 現在の敵のインデックスを追跡する変数
     public static bool islevelup = false;
 
     public Result resultManager; // Result スクリプトの参照
@@ -19,11 +20,6 @@ public class Enemy_Status : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
-        for (int i = 0; i < 5; i++ )
-        {
-            Enemy_HP.Add(max_HP  + i * 20);//Enemy_HPリストに現在のHPを追加
-        }
         current_HP = Enemy_HP[currentEnemyIndex];//EnemyのHPを最大HPに設定
         UpdateHP();//HPを更新
     }

@@ -74,7 +74,7 @@ public class Player_Status : MonoBehaviour
         {
             Heal(heal_count);
         }
-        TakeDamege(block_count, 10); // ダメージ処理
+        TakeDamege(block_count, Enemy_Status.Enemy_ATK[Enemy_Status.currentEnemyIndex]); // ダメージ処理
         
         // ★修正: 生きている時だけ敵へ攻撃するように設定
         if (current_HP > 0)

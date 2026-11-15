@@ -13,7 +13,7 @@ public class Slot_Stop : MonoBehaviour
     int slot_error_min = 1000; //スロットのずれの最小値を格納する変数
     string slot_flag = "false"; //スロットの回転を止めるためのフラグ
     
-    [SerializeField] private GameObject ButtonParent;
+    [SerializeField] public GameObject ButtonParent;
 
     [SerializeField] private float defaultSpeed = 1.0f; // ★追加: 通常回転時のデフォルトスピード
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -71,8 +71,10 @@ public class Slot_Stop : MonoBehaviour
             slot_results.CountSlot(slot_results.slot_reels); //countSlot関数の呼び出し
             player.OnAllSlotsStopped();//
             //スロットがすべて止まった時にボタンを再生成する
-            ButtonParent.SetActive(true);
-            
+            if (Enemy_Status.islevelup != true)
+            {
+                ButtonParent.SetActive(true);
+            }
         }
     }
     

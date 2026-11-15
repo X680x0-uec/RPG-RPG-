@@ -18,7 +18,7 @@ public class Player_Status : MonoBehaviour
     [SerializeField] Enemy_Status enemy; // Enemy_Statusスクリプトの参照
     [SerializeField] Slot_Results slot_results; // Slot_Resultsスクリプトの参照
     [SerializeField] Level_up Level_UP; // Level_upスクリプトの参照
-    
+    public static float speed_bonus = 1.0f; // ★追加: スピードボーナスの初期値
     int attack_count; // attackが出た数
     int block_count; // blockが出た数
     int heal_count; // healが出た数
@@ -100,7 +100,8 @@ public class Player_Status : MonoBehaviour
             attack_count *= attack_bonus;
             Debug.Log("attackが三つそろった! 相手に大ダメージ!");
         }
-        int enemy_damage = attack_power * (attack_count + 1) + attack_level_count * 10; // 攻撃力の計算
+        int total_attack = attack_power * (attack_count + 1) + attack_level_count * 10;
+        int enemy_damage = (int)(total_attack * speed_bonus) ; // 攻撃力の計算
         enemy.TakeDamege(enemy_damage);
     }
     
@@ -108,7 +109,8 @@ public class Player_Status : MonoBehaviour
     {
         if (block_count != 3)
         {
-            current_HP -= (int)(damage - damage * block_count * 0.2f - block_level_count * 5); // ダメージ計算
+            int total_block = (int)(block_count * 0.2f  - block_level_count * 5);
+            current_HP -= (int)(damage - damage  *total_block* speed_bonus); // ダメージ計算
         }
         current_HP = Mathf.Clamp(current_HP, 0, max_HP);
         UpdateHP(); // HPを更新
@@ -128,7 +130,9 @@ public class Player_Status : MonoBehaviour
             total_heal *= heal_bonus;
             Debug.Log("healが三つそろった!");
         }
-        current_HP += (int)total_heal + heal_level_count * 10; // 回復量の計算
+        int healAmount = (int)(total_heal + heal_level_count * 10);
+        current_HP += healAmount; // 回復量の計算
+        current_HP = (int)(current_HP * speed_bonus);
         current_HP = Mathf.Clamp(current_HP, 0, max_HP);
         UpdateHP();
     }

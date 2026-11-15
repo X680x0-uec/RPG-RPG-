@@ -2,9 +2,11 @@ using UnityEngine;
 using TMPro;
 
 public class Result : MonoBehaviour
+
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     [Header("UIの参照")]
+    [SerializeField] public GameObject ButtonParent;
     public GameObject resultPanel; // リザルト画面のパネル
     void Start()
     {
@@ -24,5 +26,6 @@ public class Result : MonoBehaviour
     {
         Debug.Log("新しい敵が現れた！");
         resultPanel.SetActive(false);
+        ButtonParent.SetActive(true);
     }
 }

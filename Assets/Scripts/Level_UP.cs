@@ -9,6 +9,7 @@ public class Level_up : MonoBehaviour
     [SerializeField]private GameObject LevelUPButton_block;
     [SerializeField]private GameObject LevelUPButton_heal;
     [SerializeField]private GameObject Button_next;
+    [SerializeField] public GameObject ButtonParent;
     public static List<int> LevelUP_Ability = new List<int>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,6 +22,7 @@ public class Level_up : MonoBehaviour
     {
         if (Enemy_Status.islevelup == true)
         {
+            ButtonParent.SetActive(false);
             LevelUPButton_attack.SetActive(true);
             LevelUPButton_block.SetActive(true);
             LevelUPButton_heal.SetActive(true);

@@ -33,6 +33,7 @@ public class Slot_Restart : MonoBehaviour
 
     public void RecreateButtons()
     {
+        Debug.Log("RecreateButtons called");
         ButtonParent.SetActive(true);
     }
 }

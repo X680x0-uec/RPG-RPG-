@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class Slot_Spin : MonoBehaviour
 {
-    public static float spin_speed = 1.0f * 300;//Slot_Speed.slot_speed;//変数の宣言
+    public static float spin_speed = 1.0f * 300 * Slot_Speed.slot_speed;//Slot_Speed.slot_speed;//変数の宣言
     public Vector2 restart_position ;
     public float loop_hight = 600.0f;
     private RectTransform rectTransform;
@@ -17,7 +17,7 @@ public class Slot_Spin : MonoBehaviour
     void Update() //記憶が正しければこっちの関数は毎フレーム呼ばれる関数だったはず
     {
         Vector2 current_position = rectTransform.anchoredPosition; //オブジェクトの現在位置を取得
-        current_position.y -= spin_speed * Time.deltaTime; //オブジェクトの位置
+        current_position.y -= spin_speed * Time.deltaTime; //slot_speed; //オブジェクトの位置
         rectTransform.anchoredPosition = current_position; //オブジェクトの位置を更新
 
         if (rectTransform.anchoredPosition.y < -450.0f) //オブジェクトの位置が画面外に出たら

@@ -34,6 +34,7 @@ public class Level_up : MonoBehaviour
     
         public void OnButtonClick(int abilityIndex)
     {
+        SoundManager.Instance?.PlaySE(SoundManager.Instance.seLevelUpSelect); // ★追加: 能力選択音
         Debug.Log($"Button {abilityIndex} clicked!");
         LevelUP_Ability.Add(abilityIndex);
         LevelUPButton_attack.SetActive(false);

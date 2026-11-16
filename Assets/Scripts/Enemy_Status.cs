@@ -1,13 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
 public class Enemy_Status : MonoBehaviour
 {
     // 5体分のHPと攻撃力（左から1体目、2体目、3体目、4体目、5体目）
-    public static List<int> Enemy_HP = new List<int> { 100, 200, 300, 400, 500 }; //[cite: 1]
-    public static List<int> Enemy_ATK = new List<int> { 10, 30, 80, 50, 200 };   //[cite: 1]
+    public static List<int> Enemy_HP = new List<int> { 100, 200, 300, 400, 500 };
+    public static List<int> Enemy_ATK = new List<int> { 10, 30, 80, 50, 200 };
 
     [Header("★ここに1〜5体目の敵の「画像」を5枚登録する")]
     [SerializeField] private Sprite[] enemySprites;
@@ -69,7 +70,13 @@ public class Enemy_Status : MonoBehaviour
         UpdateHP();
     }
 
-    public void TakeDamege(int enemy_damage) //[cite: 1]
+    // 敵が倒れているかを外部から確認するメソッド
+    public bool IsDead()
+    {
+        return current_HP <= 0;
+    }
+
+    public void TakeDamege(int enemy_damage)
     {
         if (current_HP <= 0) return;
 
@@ -79,15 +86,19 @@ public class Enemy_Status : MonoBehaviour
 
         if (current_HP <= 0)
         {
-            Die();
+            StartCoroutine(DieSequence()); // 揃い音と重ならないよう時間差で撃破処理を実行
         }
     }
 
-    private void Die()
+    private IEnumerator DieSequence()
     {
+        // 揃い効果音と重ならないように0.4秒待つ
+        yield return new WaitForSeconds(0.4f);
+
         // 5体目（最後）を倒したときの処理
         if (currentEnemyIndex >= Enemy_HP.Count - 1)
         {
+            SoundManager.Instance?.PlaySE(SoundManager.Instance.seGameClear); // 全クリア音
             islevelup = true;
 
             // 5体目を倒したら敵の画像だけ非表示にする
@@ -100,10 +111,11 @@ public class Enemy_Status : MonoBehaviour
             {
                 gameClearText.SetActive(true);
             }
-            return;
+            yield break;
         }
 
         // 1〜4体目を倒したときはリザルト＆レベルアップ画面を出す
+        SoundManager.Instance?.PlaySE(SoundManager.Instance.seEnemyDefeat); // 敵撃破音
         islevelup = true;
         if (resultManager != null)
         {

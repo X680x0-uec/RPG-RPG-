@@ -6,6 +6,7 @@ public class Slot_Speed : MonoBehaviour
 
      public void OnClickButton(int button_speed) //ボタンが押された時の処理
     {
+        SoundManager.Instance?.PlaySE(SoundManager.Instance.seSpeedChange); // ★追加: スピード変更音
         switch(button_speed)
         {
             case 1:

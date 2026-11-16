@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
@@ -26,6 +27,9 @@ public class Player_Status : MonoBehaviour
     int attack_level_count;
     int block_level_count;
     int heal_level_count;
+
+    [Header("効果音の間隔（秒）")]
+    [SerializeField] private float seInterval = 0.4f; // 音が重ならないための待機時間
     
 
     void Start()
@@ -47,7 +51,13 @@ public class Player_Status : MonoBehaviour
         
     }
 
-    public void OnAllSlotsStopped()
+    public void OnAllSlotsStopped(GameObject buttonParent = null)
+    {
+        StartCoroutine(BattleSequence(buttonParent));
+    }
+
+    // 音が重ならないように時間差で順番に処理するコルーチン
+    private IEnumerator BattleSequence(GameObject buttonParent)
     {
         attack_level_count = 0;
         block_level_count = 0;
@@ -71,16 +81,68 @@ public class Player_Status : MonoBehaviour
             }
         }
         Debug.Log($"attack_level_count: {attack_level_count}, block_level_count: {block_level_count}, heal_level_count: {heal_level_count}");
+
+        // 1. 3つ目のリール停止音と重ならないよう少し待つ
+        yield return new WaitForSeconds(seInterval);
+
+        // 2. 揃い数に応じた効果音を再生
+        PlayMatchSE();
+
+        // 3. 効果音に合わせて少し待ってからバトルの数値処理を実行
+        yield return new WaitForSeconds(seInterval);
+
         if (heal_count > 0) // healの目が出た場合、回復
         {
             Heal(heal_count);
         }
         TakeDamege(block_count, Enemy_Status.Enemy_ATK[Enemy_Status.currentEnemyIndex]); // ダメージ処理
         
-        // ★修正: 生きている時だけ敵へ攻撃するように設定
+        // 生きている時だけ敵へ攻撃する
         if (current_HP > 0)
         {
             Attack(attack_count);
+
+            // 敵を倒していなければ操作ボタンを再表示する
+            if (enemy != null && !enemy.IsDead() && Enemy_Status.islevelup != true)
+            {
+                if (buttonParent != null)
+                {
+                    buttonParent.SetActive(true);
+                }
+            }
+        }
+    }
+
+    // 揃い方に応じた効果音を再生するメソッド
+    private void PlayMatchSE()
+    {
+        if (attack_count == 2)
+        {
+            SoundManager.Instance?.PlaySE(SoundManager.Instance.seAttackMid);
+        }
+        else if (attack_count == 3)
+        {
+            SoundManager.Instance?.PlaySE(SoundManager.Instance.seAttackHigh);
+        }
+        else if (block_count == 2)
+        {
+            SoundManager.Instance?.PlaySE(SoundManager.Instance.seBlockMid);
+        }
+        else if (block_count == 3)
+        {
+            SoundManager.Instance?.PlaySE(SoundManager.Instance.seBlockHigh);
+        }
+        else if (heal_count == 2)
+        {
+            SoundManager.Instance?.PlaySE(SoundManager.Instance.seHealMid);
+        }
+        else if (heal_count == 3)
+        {
+            SoundManager.Instance?.PlaySE(SoundManager.Instance.seHealHigh);
+        }
+        else if (attack_count == 1 && block_count == 1 && heal_count == 1)
+        {
+            SoundManager.Instance?.PlaySE(SoundManager.Instance.seMatchAllOne);
         }
     }
 

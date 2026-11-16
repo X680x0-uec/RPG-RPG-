@@ -11,6 +11,7 @@ public class Slot_Restart : MonoBehaviour
     /// </summary>
     public void RestartAllSlots()
     {
+        SoundManager.Instance?.PlaySE(SoundManager.Instance.seSlotStart); // ★追加: スロット再回転音
         ButtonParent.SetActive(false);
         if (allReels == null || allReels.Length == 0)
         {

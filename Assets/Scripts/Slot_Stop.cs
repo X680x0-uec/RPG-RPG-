@@ -30,6 +30,7 @@ public class Slot_Stop : MonoBehaviour
             if (image_location[slot_error].anchoredPosition.y < -275.0f) //スロットのずれが真ん中より大きくなったら
             {
                 StopSlot(slot_spin.Length); //スロットの回転を止める
+                SoundManager.Instance?.PlaySE(SoundManager.Instance.seSlotStop); // ★追加: リール停止音
                 slot_flag = "false"; //スロットの回転を止めるためのフラグを下ろす
                 isStopped=true;//停止したスロットのisStoppedをtrueにする
                 TriggerResult();//countの集計
@@ -69,12 +70,8 @@ public class Slot_Stop : MonoBehaviour
         {
             isResulted = true; //count集計済みになるのでisResultedをtrueにする
             slot_results.CountSlot(slot_results.slot_reels); //countSlot関数の呼び出し
-            player.OnAllSlotsStopped();//
-            //スロットがすべて止まった時にボタンを再生成する
-            if (Enemy_Status.islevelup != true)
-            {
-                ButtonParent.SetActive(true);
-            }
+            // ★変更: ボタンの再表示も演出終了後に行うため ButtonParent を渡す
+            player.OnAllSlotsStopped(ButtonParent);
         }
     }
     

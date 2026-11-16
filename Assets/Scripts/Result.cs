@@ -27,6 +27,7 @@ public class Result : MonoBehaviour
     // "NEXT"ボタンが押されたときの処理
     public void OnClickNextButton()
     {
+        SoundManager.Instance?.PlaySE(SoundManager.Instance.seNextButton); // ★追加: NEXTボタン音
         Debug.Log("新しい敵が現れた！");
         resultPanel.SetActive(false);
         ButtonParent.SetActive(true);

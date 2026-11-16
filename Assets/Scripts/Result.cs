@@ -2,22 +2,25 @@ using UnityEngine;
 using TMPro;
 
 public class Result : MonoBehaviour
-
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     [Header("UIの参照")]
     [SerializeField] public GameObject ButtonParent;
-    public GameObject resultPanel; // リザルト画面のパネル
+    public GameObject resultPanel;
+    [SerializeField] private Enemy_Status enemyStatus;
+
     void Start()
     {
-        // ゲーム開始時はリザルト画面を隠しておく
         resultPanel.SetActive(false);
+
+        // 自動でEnemy_Statusを探してつなぐ
+        if (enemyStatus == null)
+        {
+            enemyStatus = FindAnyObjectByType<Enemy_Status>();
+        }
     }
 
-    // 敵が倒されたときに呼ばれるメゾット
     public void ShowResult()
     {
-        // パネルを表示する
         resultPanel.SetActive(true);
     }
 
@@ -27,5 +30,11 @@ public class Result : MonoBehaviour
         Debug.Log("新しい敵が現れた！");
         resultPanel.SetActive(false);
         ButtonParent.SetActive(true);
+
+        // 次の敵を出現させる
+        if (enemyStatus != null)
+        {
+            enemyStatus.SpawnNextEnemy();
+        }
     }
 }

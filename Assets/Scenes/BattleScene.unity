@@ -6641,7 +6641,7 @@ GameObject:
   - component: {fileID: 1647290602}
   - component: {fileID: 1647290604}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: Enemies
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6734,6 +6734,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 379596754f2344b4f8aa0de5e5f43311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Status
+  enemySprites:
+  - {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
+  - {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
+  - {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
+  - {fileID: 3625043607559282579, guid: 19fb86013d8c24d6cb8410c0aadf30fa, type: 3}
+  - {fileID: 2747690628134850419, guid: 16037dbd798344f57a526d53d48f5ead, type: 3}
+  gameClearText: {fileID: 0}
   max_HP: 100
   current_HP: 0
   HP_bar: {fileID: 1113158596}
@@ -8221,6 +8228,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Result
   ButtonParent: {fileID: 697925449}
   resultPanel: {fileID: 2076868648}
+  enemyStatus: {fileID: 0}
 --- !u!4 &2146930372
 Transform:
   m_ObjectHideFlags: 0

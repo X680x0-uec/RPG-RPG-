@@ -12,6 +12,7 @@ public class Player_Status : MonoBehaviour
     [SerializeField] TextMeshProUGUI gameOverText; // ★追加: GAMEOVERテキストの参照
 
     [SerializeField] AudioSource gameOverBGM;
+    [SerializeField] public AudioSource gameWhileBGM; // ★追加: ゲーム中のBGMの参照
     [SerializeField] int attack_power; // Playerの攻撃力
     [SerializeField] int attack_bonus; // attackが三つそろった時のボーナス値
     [SerializeField] float heal_bonus; // healが三つそろった時のボーナス値
@@ -146,6 +147,10 @@ public class Player_Status : MonoBehaviour
     // ★追加: GAMEOVER表示処理
     private void GameOver()
     {
+        if (gameWhileBGM != null)
+        {
+            gameWhileBGM.Stop(); // ゲーム中のBGMを停止
+        }
         Debug.Log("GAME OVER...");
         if (gameOverText != null)
         {

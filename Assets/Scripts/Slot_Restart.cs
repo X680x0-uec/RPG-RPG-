@@ -5,6 +5,7 @@ public class Slot_Restart : MonoBehaviour
     // インスペクターから全リールの Slot_Stop をセットします
     [SerializeField] private Slot_Stop[] allReels;
     [SerializeField] private GameObject ButtonParent;
+    [SerializeField] public AudioSource spinBGM; // ★追加: スロット再開中のBGM
     /// <summary>
     /// 全てのリールを一括で再回転させるメソッド
     /// （UIボタンの OnClick に登録します）
@@ -12,6 +13,10 @@ public class Slot_Restart : MonoBehaviour
     public void RestartAllSlots()
     {
         SoundManager.Instance?.PlaySE(SoundManager.Instance.seSlotStart); // ★追加: スロット再回転音
+        if (spinBGM != null)
+        {
+            spinBGM.Play(); // ゲーム中のBGMを再生
+        }
         ButtonParent.SetActive(false);
         if (allReels == null || allReels.Length == 0)
         {

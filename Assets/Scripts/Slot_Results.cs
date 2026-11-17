@@ -7,6 +7,7 @@ public class Slot_Results : MonoBehaviour
     public int block_count;//blockの目の数
     public int heal_count;//healの目の数
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] private AudioSource spinBGM;   // スロット回転中のBGM
     void Start()
     {
         
@@ -15,7 +16,6 @@ public class Slot_Results : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
     public bool AllStopped()//スロットがすべて止まっているかどうかを判定する関数
     {
@@ -53,6 +53,12 @@ public class Slot_Results : MonoBehaviour
         }
         Debug.Log("attack=" + attack_count + ", block=" + block_count + ", heal=" + heal_count);
     }
-
+    public void StopSpinBGM()
+    {
+        if (spinBGM != null)
+        {
+            spinBGM.Stop();
+        }
+    }
 }
 

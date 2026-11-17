@@ -75,6 +75,7 @@ public class Slot_Stop : MonoBehaviour
             isResulted = true; //count集計済みになるのでisResultedをtrueにする
             slot_results.CountSlot(slot_results.slot_reels); //countSlot関数の呼び出し
             // ★変更: ボタンの再表示も演出終了後に行うため ButtonParent を渡す
+            slot_results.StopSpinBGM(); 
             player.OnAllSlotsStopped(ButtonParent);
         }
     }

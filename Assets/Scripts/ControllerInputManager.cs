@@ -14,7 +14,6 @@ public class ControllerInputManager : MonoBehaviour
         var gamepad = Gamepad.current;
         var keyboard = Keyboard.current;
 
-        // コントローラーもキーボードも未接続なら何もしない
         if (gamepad == null && keyboard == null) return;
 
         // 1. 回転前（速度選択・スタートボタンが表示されている時）
@@ -30,29 +29,41 @@ public class ControllerInputManager : MonoBehaviour
         }
     }
 
-    // リール速度変更（左：低速 / 下：通常 / 右：高速）
+    // リール速度変更（左で1段階遅く / 右で1段階速く）
     private void HandleSlotSpeed(Gamepad gamepad, Keyboard keyboard)
     {
         if (slotSpeed == null) return;
 
-        if (IsLeftPressed(gamepad, keyboard))
+        bool left = (gamepad != null && (gamepad.dpad.left.wasPressedThisFrame || gamepad.leftStick.left.wasPressedThisFrame || gamepad.buttonWest.wasPressedThisFrame))
+                 || (keyboard != null && (keyboard.leftArrowKey.wasPressedThisFrame || keyboard.aKey.wasPressedThisFrame));
+
+        bool right = (gamepad != null && (gamepad.dpad.right.wasPressedThisFrame || gamepad.leftStick.right.wasPressedThisFrame || gamepad.buttonEast.wasPressedThisFrame))
+                  || (keyboard != null && (keyboard.rightArrowKey.wasPressedThisFrame || keyboard.dKey.wasPressedThisFrame));
+
+        int currentSpeedIndex = GetCurrentSpeedIndex();
+
+        if (left && currentSpeedIndex > 1)
         {
-            slotSpeed.OnClickButton(1); // 1: 低速 (0.5f)
+            slotSpeed.OnClickButton(currentSpeedIndex - 1); // 1段階遅くする（高速→通常→低速）
         }
-        else if (IsDownPressed(gamepad, keyboard))
+        else if (right && currentSpeedIndex < 3)
         {
-            slotSpeed.OnClickButton(2); // 2: 通常 (1.0f)
-        }
-        else if (IsRightPressed(gamepad, keyboard))
-        {
-            slotSpeed.OnClickButton(3); // 3: 高速 (1.5f)
+            slotSpeed.OnClickButton(currentSpeedIndex + 1); // 1段階速くする（低速→通常→高速）
         }
     }
 
-    // スロット開始：Y / Start または Space / Enterキー
+    // 現在のスロット速度からインデックス（1:低速, 2:通常, 3:高速）を取得
+    private int GetCurrentSpeedIndex()
+    {
+        if (Mathf.Approximately(Slot_Speed.slot_speed, 0.5f)) return 1;
+        if (Mathf.Approximately(Slot_Speed.slot_speed, 1.5f)) return 3;
+        return 2; // 1.0f（通常）
+    }
+
+    // スロット開始：決定ボタン（XboxのAボタン / Space / Enter）
     private void HandleSlotStart(Gamepad gamepad, Keyboard keyboard)
     {
-        bool padStart = gamepad != null && (gamepad.buttonNorth.wasPressedThisFrame || gamepad.startButton.wasPressedThisFrame);
+        bool padStart = gamepad != null && gamepad.buttonSouth.wasPressedThisFrame;
         bool keyStart = keyboard != null && (keyboard.spaceKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame);
 
         if (padStart || keyStart)
@@ -64,45 +75,27 @@ public class ControllerInputManager : MonoBehaviour
         }
     }
 
-    // リール停止（左・中・右）
+    // リール停止（左：十字左 or X / 中：十字下 or A / 右：十字右 or B）
     private void HandleSlotStop(Gamepad gamepad, Keyboard keyboard)
     {
         if (reels == null || reels.Length < 3) return;
 
-        if (IsLeftPressed(gamepad, keyboard))
+        bool left  = (gamepad != null && (gamepad.dpad.left.wasPressedThisFrame  || gamepad.buttonWest.wasPressedThisFrame))  || (keyboard != null && (keyboard.leftArrowKey.wasPressedThisFrame  || keyboard.aKey.wasPressedThisFrame));
+        bool down  = (gamepad != null && (gamepad.dpad.down.wasPressedThisFrame  || gamepad.buttonSouth.wasPressedThisFrame)) || (keyboard != null && (keyboard.downArrowKey.wasPressedThisFrame  || keyboard.sKey.wasPressedThisFrame));
+        bool right = (gamepad != null && (gamepad.dpad.right.wasPressedThisFrame || gamepad.buttonEast.wasPressedThisFrame))  || (keyboard != null && (keyboard.rightArrowKey.wasPressedThisFrame || keyboard.dKey.wasPressedThisFrame));
+
+        if (left)
         {
             StopReelIfMoving(0); // 左リール停止
         }
-        else if (IsDownPressed(gamepad, keyboard))
+        else if (down)
         {
             StopReelIfMoving(1); // 中リール停止
         }
-        else if (IsRightPressed(gamepad, keyboard))
+        else if (right)
         {
             StopReelIfMoving(2); // 右リール停止
         }
-    }
-
-    // --- 共通の入力判定（コントローラー ＋ キーボード） ---
-    private bool IsLeftPressed(Gamepad g, Keyboard k)
-    {
-        bool pad = g != null && (g.dpad.left.wasPressedThisFrame || g.buttonWest.wasPressedThisFrame);
-        bool key = k != null && (k.leftArrowKey.wasPressedThisFrame || k.aKey.wasPressedThisFrame);
-        return pad || key;
-    }
-
-    private bool IsDownPressed(Gamepad g, Keyboard k)
-    {
-        bool pad = g != null && (g.dpad.down.wasPressedThisFrame || g.buttonSouth.wasPressedThisFrame);
-        bool key = k != null && (k.downArrowKey.wasPressedThisFrame || k.sKey.wasPressedThisFrame);
-        return pad || key;
-    }
-
-    private bool IsRightPressed(Gamepad g, Keyboard k)
-    {
-        bool pad = g != null && (g.dpad.right.wasPressedThisFrame || g.buttonEast.wasPressedThisFrame);
-        bool key = k != null && (k.rightArrowKey.wasPressedThisFrame || k.dKey.wasPressedThisFrame);
-        return pad || key;
     }
 
     private void StopReelIfMoving(int index)

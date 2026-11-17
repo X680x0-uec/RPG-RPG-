@@ -1,13 +1,20 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem; // 新Input Systemを使うために追加
+using UnityEngine.InputSystem;
 
 public class SceneChanger : MonoBehaviour
 {
     void Update()
     {
-        // 新Input Systemでマウスクリック（または画面タップ）を判定
-        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        bool isMouseClicked = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
+
+        bool isGamepadPressed = Gamepad.current != null && 
+            (Gamepad.current.buttonSouth.wasPressedThisFrame || Gamepad.current.startButton.wasPressedThisFrame);
+
+        bool isKeyboardPressed = Keyboard.current != null &&
+            (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.enterKey.wasPressedThisFrame);
+
+        if (isMouseClicked || isGamepadPressed || isKeyboardPressed)
         {
             SceneManager.LoadScene("BattleScene");
         }

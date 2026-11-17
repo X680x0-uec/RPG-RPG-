@@ -39,6 +39,10 @@ public class Slot_Stop : MonoBehaviour
     }
     public void OnClickButton() //ボタンが押された時の処理
     {
+
+        // ★この1行を追加（すでに停止済み、または停止処理中なら無視する）
+        if (isStopped || slot_flag == "true") return;
+        
         slot_error_min = 1000;
         int image_count = image_location.Length;
         List<float> image_center = new List<float>(); //画像の中心位置を格納するリスト

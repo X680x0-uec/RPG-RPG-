@@ -7022,7 +7022,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 379596754f2344b4f8aa0de5e5f43311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Status
-  enemySprites: []
+  enemySprites:
+  - {fileID: 6101821313239248995, guid: a8484cca9e827b940b0c5d3675778402, type: 3}
+  - {fileID: -5264938201329035749, guid: 1678d3b42852eb64ea1fd756dfcfc378, type: 3}
+  - {fileID: 1126608537136177273, guid: ebc5a129ba8f67f4784ac749e1356f50, type: 3}
+  - {fileID: -2073856486009437279, guid: 7220c86d4ebde4d47b2ab3c0bfe4a648, type: 3}
+  - {fileID: -1286610109338979004, guid: 80795f7ae7a185841a25a2ca19726504, type: 3}
   gameClearText: {fileID: 0}
   max_HP: 100
   current_HP: 0

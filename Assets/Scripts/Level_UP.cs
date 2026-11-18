@@ -136,6 +136,7 @@ public class Level_up : MonoBehaviour
             }
 
             Slot_Spin.spin_speed = Slot_Speed.GetCurrentSpinSpeed();
+            ScoreManager.Instance?.UpdateAllUI(); // ★追加：スキルによる速度倍率変化をUIへ即反映
             Debug.Log($"スキル獲得: {acquiredSkill} / ATK+{attackBonusTotal}, BLK+{blockBonusTotal}, HEAL+{healBonusTotal}");
         }
         else

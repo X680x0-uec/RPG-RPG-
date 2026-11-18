@@ -69,6 +69,10 @@ public class Player_Status : MonoBehaviour
 
         GetSlotResults(); // 各カウント数の取得
 
+        // ★追加：ターン経過＆絵柄揃いスコア増減（呪い揃いの減少も含む）
+        ScoreManager.Instance?.OnTurnPassed();
+        ScoreManager.Instance?.AddMatchScore(attack_count, block_count, heal_count, curse_count);
+
         // 1. 3つ目のリール停止音と重ならないよう少し待つ
         yield return new WaitForSeconds(seInterval);
 
@@ -226,6 +230,10 @@ public class Player_Status : MonoBehaviour
         {
             gameWhileBGM.Stop(); // ゲーム中のBGMを停止
         }
+        if (lastBossBGM != null)
+        {
+            lastBossBGM.Stop(); // ★修正：ゲームオーバー時はラスボスBGMも停止
+        }
         Debug.Log("GAME OVER...");
         if (gameOverText != null)
         {
@@ -235,10 +243,10 @@ public class Player_Status : MonoBehaviour
         {
             gameOverBGM.Play();
         }
-        if (lastBossBGM != null)
-        {
-            lastBossBGM.Play();
-        }
+
+        // ★追加：ゲームオーバー時点のスコアをランキングに登録
+        ScoreManager.Instance?.FinalizeGameScore(false);
+
         if (SceneChanger != null)
         {
             SceneChanger.SceneChange("ResultScene"); // シーンに戻る

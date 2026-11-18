@@ -4,13 +4,11 @@ using UnityEngine.InputSystem;
 
 public class SceneChanger2 : MonoBehaviour
 {
-    [SerializeField] private SceneManager SceneManager;
-
     void Update()
     {
         bool isMouseClicked = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
 
-        bool isGamepadPressed = Gamepad.current != null && 
+        bool isGamepadPressed = Gamepad.current != null &&
             (Gamepad.current.buttonSouth.wasPressedThisFrame || Gamepad.current.startButton.wasPressedThisFrame);
 
         bool isKeyboardPressed = Keyboard.current != null &&
@@ -18,8 +16,8 @@ public class SceneChanger2 : MonoBehaviour
 
         if (isMouseClicked || isGamepadPressed || isKeyboardPressed)
         {
+            ScoreManager.ResetForNewGame();
             SceneManager.LoadScene("BattleScene");
         }
     }
-    
 }

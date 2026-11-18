@@ -5,19 +5,23 @@ using TMPro;
 
 public class FinalResult : MonoBehaviour
 {
-    public GameObject gameClearText; // ゲームクリア時に表示するテキスト
-    public GameObject gameOverText; // ゲームオーバー時に表示するテキスト
-    public AudioSource gameOverBGM; // ゲームオーバー時に再生するBGM
+    public GameObject gameClearText;  // ゲームクリア時に表示するテキスト
+    public GameObject gameOverText;   // ゲームオーバー時に表示するテキスト
+    public GameObject continueButton; // ★追加：コンティニューボタンの参照
+    public AudioSource gameOverBGM;   // ゲームオーバー時に再生するBGM
+
     void Start()
     {
-        if(Enemy_Status.isGameClear)
+        if (Enemy_Status.isGameClear)
         {
-            gameClearText.SetActive(true);
+            if (gameClearText != null) gameClearText.SetActive(true);
+            if (continueButton != null) continueButton.SetActive(false); // クリア時は非表示
         }
         else
         {
-            gameOverText.SetActive(true);
-            gameOverBGM.Play();
+            if (gameOverText != null) gameOverText.SetActive(true);
+            if (continueButton != null) continueButton.SetActive(true);  // ゲームオーバー時は表示
+            if (gameOverBGM != null) gameOverBGM.Play();
         }
     }
 }

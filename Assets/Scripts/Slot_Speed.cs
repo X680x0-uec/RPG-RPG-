@@ -6,13 +6,13 @@ public class Slot_Speed : MonoBehaviour
     public static float slot_speed = 1.0f;
 
     [Header("速度ボタンの登録")]
-    [SerializeField] private Image slowButtonImage;   // 低速ボタンをセット
-    [SerializeField] private Image normalButtonImage; // 通常ボタンをセット
-    [SerializeField] private Image fastButtonImage;   // 高速ボタンをセット
+    [SerializeField] private Image slowButtonImage;
+    [SerializeField] private Image normalButtonImage;
+    [SerializeField] private Image fastButtonImage;
 
     [Header("ボタンの色設定")]
-    [SerializeField] private Color selectedColor = Color.yellow; // 選択中の色
-    [SerializeField] private Color defaultColor = Color.white;   // 未選択時の色
+    [SerializeField] private Color selectedColor = Color.yellow;
+    [SerializeField] private Color defaultColor = Color.white;
 
     void Start()
     {
@@ -20,9 +20,9 @@ public class Slot_Speed : MonoBehaviour
         Slot_Spin.spin_speed = GetCurrentSpinSpeed();
 
         UpdateButtonColors(2);
+        ScoreManager.Instance?.UpdateAllUI();
     }
 
-    // 基本速度 × 選択速度 × スキル倍率 を一括計算する
     public static float GetCurrentSpinSpeed()
     {
         return 300f * slot_speed * Level_up.GetReelSpeedMultiplier();
@@ -34,21 +34,22 @@ public class Slot_Speed : MonoBehaviour
         switch (button_speed)
         {
             case 1:
-                slot_speed = 0.5f; // 遅め
+                slot_speed = 0.5f;
                 Player_Status.speed_bonus = 0.5f;
                 break;
             case 2:
-                slot_speed = 1.0f; // 通常
+                slot_speed = 1.0f;
                 Player_Status.speed_bonus = 1.0f;
                 break;
             case 3:
-                slot_speed = 1.5f; // 速め
+                slot_speed = 1.5f;
                 Player_Status.speed_bonus = 1.5f;
                 break;
         }
 
         Slot_Spin.spin_speed = GetCurrentSpinSpeed();
         UpdateButtonColors(button_speed);
+        ScoreManager.Instance?.UpdateAllUI();
     }
 
     private void UpdateButtonColors(int speedIndex)

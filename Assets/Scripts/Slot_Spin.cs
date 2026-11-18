@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Slot_Spin : MonoBehaviour
 {
@@ -6,7 +7,11 @@ public class Slot_Spin : MonoBehaviour
     public Vector2 restart_position;
     public float loop_hight = 600.0f;
     private RectTransform rectTransform;
+
+    [HideInInspector] public int currentSymbolType = 0; // 0:攻撃, 1:防御, 2:回復, 3:オールマイティ, 4:デメリット
     private Slot_Stop parentReel;
+    private Image symbolImage;
+    private Color originalColor = Color.white;
 
     // 中央(-275f)を基準に上下対称（-130f ～ -420f）で1周290fとする
     private const float BottomLimit = -420.0f;
@@ -18,9 +23,27 @@ public class Slot_Spin : MonoBehaviour
         restart_position = new Vector2(rectTransform.anchoredPosition.x, 500f);
     }
 
-    public void SetParentReel(Slot_Stop reel)
+    public void InitializeSymbol(Slot_Stop reel, int initialType, Sprite initialSprite)
     {
         parentReel = reel;
+        currentSymbolType = initialType;
+        symbolImage = GetComponent<Image>();
+        if (symbolImage != null)
+        {
+            originalColor = symbolImage.color;
+            if (initialSprite != null) symbolImage.sprite = initialSprite;
+        }
+    }
+
+    public void ApplySymbolVisual(int symbolType, Sprite newSprite, Color? tintColor)
+    {
+        currentSymbolType = symbolType;
+        if (symbolImage == null) symbolImage = GetComponent<Image>();
+        if (symbolImage != null)
+        {
+            if (newSprite != null) symbolImage.sprite = newSprite;
+            symbolImage.color = tintColor.HasValue ? tintColor.Value : originalColor;
+        }
     }
 
     void Update()
@@ -38,6 +61,11 @@ public class Slot_Spin : MonoBehaviour
                 rectTransform.anchoredPosition.x,
                 rectTransform.anchoredPosition.y + LoopSpan
             );
+
+            if (parentReel != null)
+            {
+                parentReel.AssignNextSymbol(this);
+            }
         }
     }
 }

@@ -16,11 +16,16 @@ public class Slot_Speed : MonoBehaviour
 
     void Start()
     {
-        // リトライ時に前のプレイの速度設定を引き継がないよう通常（1.0f）に初期化
         slot_speed = 1.0f;
-        Slot_Spin.spin_speed = 1.0f * 300f * slot_speed;
+        Slot_Spin.spin_speed = GetCurrentSpinSpeed();
 
         UpdateButtonColors(2);
+    }
+
+    // 基本速度 × 選択速度 × スキル倍率 を一括計算する
+    public static float GetCurrentSpinSpeed()
+    {
+        return 300f * slot_speed * Level_up.GetReelSpeedMultiplier();
     }
 
     public void OnClickButton(int button_speed)
@@ -31,21 +36,18 @@ public class Slot_Speed : MonoBehaviour
             case 1:
                 slot_speed = 0.5f; // 遅め
                 Player_Status.speed_bonus = 0.5f;
-                Slot_Spin.spin_speed = 1.0f * 300 * slot_speed;
                 break;
             case 2:
                 slot_speed = 1.0f; // 通常
                 Player_Status.speed_bonus = 1.0f;
-                Slot_Spin.spin_speed = 1.0f * 300 * slot_speed;
                 break;
             case 3:
                 slot_speed = 1.5f; // 速め
                 Player_Status.speed_bonus = 1.5f;
-                Slot_Spin.spin_speed = 1.0f * 300 * slot_speed;
                 break;
         }
 
-        // 選んだ速度のボタンの色を変更する
+        Slot_Spin.spin_speed = GetCurrentSpinSpeed();
         UpdateButtonColors(button_speed);
     }
 
@@ -61,7 +63,6 @@ public class Slot_Speed : MonoBehaviour
         if (targetImage == null) return;
         targetImage.color = color;
 
-        // Buttonコンポーネント側の設定で色が白に戻されるのを防ぐ
         Button btn = targetImage.GetComponent<Button>();
         if (btn != null)
         {

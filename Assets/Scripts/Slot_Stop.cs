@@ -15,16 +15,31 @@ public class Slot_Stop : MonoBehaviour
 
     [SerializeField] public GameObject ButtonParent;
 
+    [Header("スキル②「絵柄追加」用の画像（任意・未設定なら色分けで表示）")]
+    [SerializeField] private Sprite extraSymbolSprite; // オールマイティ用画像（未設定なら金色）
+    [SerializeField] private Sprite curseSymbolSprite; // デメリット用画像（未設定なら紫色）
+
     private const float CenterY = -275.0f;
-    private const float SymbolSpacing = 290.0f / 3f; // 3枚で1周290fになる均等間隔（約96.67f）
+    private const float SymbolSpacing = 290.0f / 3f; // 3枚で1周290fになる均等間隔
+
+    private Sprite[] defaultSprites = new Sprite[3];
+    private int nextSpawnSymbolIndex = 0;
 
     void Start()
     {
-        for (int i = 0; i < slot_spin.Length; i++)
+        nextSpawnSymbolIndex = 0;
+
+        // 初期の3枚の絵柄スプライト（0:攻撃, 1:防御, 2:回復）を記憶する
+        for (int i = 0; i < slot_spin.Length && i < 3; i++)
         {
             if (slot_spin[i] != null)
             {
-                slot_spin[i].SetParentReel(this);
+                Image img = slot_spin[i].GetComponent<Image>();
+                if (img != null)
+                {
+                    defaultSprites[i] = img.sprite;
+                }
+                slot_spin[i].InitializeSymbol(this, i % 3, defaultSprites[i]);
             }
         }
 
@@ -41,11 +56,50 @@ public class Slot_Stop : MonoBehaviour
             if (image_location[i] != null)
             {
                 Vector2 pos = image_location[i].anchoredPosition;
-                // 0番目:上(-178.33f), 1番目:中央(-275.0f), 2番目:下(-371.67f)
                 pos.y = CenterY + (1 - i) * SymbolSpacing;
                 image_location[i].anchoredPosition = pos;
             }
         }
+    }
+
+    // 画面外から上にループする図柄の絵柄IDと見た目を更新する（スキル②獲得時用）
+    public void AssignNextSymbol(Slot_Spin targetSpin)
+    {
+        if (!Level_up.HasExtraSymbolSkill()) return;
+
+        int assignedType = nextSpawnSymbolIndex;
+        // 0:攻撃, 1:防御, 2:回復, 3:オールマイティ, 4:デメリット の5種類でローテーション
+        nextSpawnSymbolIndex = (nextSpawnSymbolIndex + 1) % 5;
+
+        Sprite spriteToUse = null;
+        Color? tintColor = null;
+
+        if (assignedType < 3)
+        {
+            spriteToUse = defaultSprites[assignedType];
+        }
+        else if (assignedType == 3)
+        {
+            spriteToUse = extraSymbolSprite;
+            if (extraSymbolSprite == null) tintColor = Color.yellow;
+        }
+        else if (assignedType == 4)
+        {
+            spriteToUse = curseSymbolSprite;
+            if (curseSymbolSprite == null) tintColor = new Color(0.75f, 0.25f, 1.0f);
+        }
+
+        targetSpin.ApplySymbolVisual(assignedType, spriteToUse, tintColor);
+    }
+
+    // 現在中央に止まっている絵柄の種類を返す
+    public int GetStoppedSymbolType()
+    {
+        if (slot_spin != null && slot_error >= 0 && slot_error < slot_spin.Length && slot_spin[slot_error] != null)
+        {
+            return slot_spin[slot_error].currentSymbolType;
+        }
+        return slot_error % 3;
     }
 
     void Update()
@@ -136,7 +190,7 @@ public class Slot_Stop : MonoBehaviour
         isResulted = false;
         slot_flag = "false";
 
-        Slot_Spin.spin_speed = 1.0f * 300f * Slot_Speed.slot_speed;
+        Slot_Spin.spin_speed = Slot_Speed.GetCurrentSpinSpeed();
 
         for (int i = 0; i < n; i++)
         {

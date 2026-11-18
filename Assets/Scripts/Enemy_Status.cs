@@ -22,6 +22,7 @@ public class Enemy_Status : MonoBehaviour
     [SerializeField] private Slider HP_bar;
     [SerializeField] TextMeshProUGUI HP_text;
     [SerializeField] public int damage;
+    [SerializeField] public AudioSource spinBGM; 
 
     public static int currentEnemyIndex = 0; // 現在の敵の番号（0が1体目、4が5体目）
     public static bool islevelup = false;
@@ -41,6 +42,11 @@ public class Enemy_Status : MonoBehaviour
         // ゲーム開始時に1体目（0番目）にリセット
         currentEnemyIndex = 0;
         islevelup = false;
+
+        if (spinBGM != null)
+        {
+            spinBGM.Play(); // ゲーム中のBGMを再生
+        }
 
         if (gameClearText != null)
         {

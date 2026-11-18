@@ -21,15 +21,15 @@ public class Player_Status : MonoBehaviour
     [SerializeField] Slot_Results slot_results; // Slot_Resultsスクリプトの参照
     [SerializeField] Level_up Level_UP; // Level_upスクリプトの参照
     [SerializeField] private GameObject defaultButtonParent; // 操作ボタンの親（保険用）
-    
+
+    [Header("デメリット絵柄（呪い）1つあたりの自傷ダメージ")]
+    [SerializeField] private int curseDamage = 15;
 
     public static float speed_bonus = 1.0f; // スピードボーナスの初期値
     int attack_count; // attackが出た数
-    int block_count; // blockが出た数
-    int heal_count; // healが出た数
-    int attack_level_count;
-    int block_level_count;
-    int heal_level_count;
+    int block_count;  // blockが出た数
+    int heal_count;   // healが出た数
+    int curse_count;  // デメリット絵柄が出た数
 
     [Header("効果音の間隔（秒）")]
     [SerializeField] private float seInterval = 0.4f; // 音が重ならないための待機時間
@@ -44,12 +44,13 @@ public class Player_Status : MonoBehaviour
             gameOverText.gameObject.SetActive(false);
         }
 
+        if (SceneChanger == null)
+        {
+            SceneChanger = FindAnyObjectByType<SceneChanger>();
+        }
+
         UpdateHP();
         slot_results = FindAnyObjectByType<Slot_Results>();
-    }
-
-    void Update()
-    {
     }
 
     public void OnAllSlotsStopped(GameObject buttonParent = null)
@@ -65,29 +66,7 @@ public class Player_Status : MonoBehaviour
             buttonParent = defaultButtonParent;
         }
 
-        attack_level_count = 0;
-        block_level_count = 0;
-        heal_level_count = 0;
         GetSlotResults(); // 各カウント数の取得
-
-        int Level = Level_up.LevelUP_Ability.Count;
-        for (int i = 0; i < Level; i++)
-        {
-            int abilityIndex = Level_up.LevelUP_Ability[i];
-            switch (abilityIndex)
-            {
-                case 0:
-                    attack_level_count++;
-                    break;
-                case 1:
-                    block_level_count++;
-                    break;
-                case 2:
-                    heal_level_count++;
-                    break;
-            }
-        }
-        Debug.Log($"attack_level_count: {attack_level_count}, block_level_count: {block_level_count}, heal_level_count: {heal_level_count}");
 
         // 1. 3つ目のリール停止音と重ならないよう少し待つ
         yield return new WaitForSeconds(seInterval);
@@ -102,7 +81,13 @@ public class Player_Status : MonoBehaviour
         {
             Heal(heal_count);
         }
-        TakeDamege(block_count, Enemy_Status.Enemy_ATK[Enemy_Status.currentEnemyIndex]); // ダメージ処理
+
+        TakeDamege(block_count, Enemy_Status.Enemy_ATK[Enemy_Status.currentEnemyIndex]); // 敵からのダメージ処理
+
+        if (curse_count > 0) // デメリット絵柄が出た場合、自傷ダメージ
+        {
+            TakeCurseDamage(curse_count);
+        }
 
         // 生きている時だけ敵へ攻撃する
         if (current_HP > 0)
@@ -126,29 +111,29 @@ public class Player_Status : MonoBehaviour
     // 揃い方に応じた効果音を再生するメソッド
     private void PlayMatchSE()
     {
-        if (attack_count == 2)
+        if (attack_count >= 3)
+        {
+            SoundManager.Instance?.PlaySE(SoundManager.Instance.seAttackHigh);
+        }
+        else if (attack_count == 2)
         {
             SoundManager.Instance?.PlaySE(SoundManager.Instance.seAttackMid);
         }
-        else if (attack_count == 3)
+        else if (block_count >= 3)
         {
-            SoundManager.Instance?.PlaySE(SoundManager.Instance.seAttackHigh);
+            SoundManager.Instance?.PlaySE(SoundManager.Instance.seBlockHigh);
         }
         else if (block_count == 2)
         {
             SoundManager.Instance?.PlaySE(SoundManager.Instance.seBlockMid);
         }
-        else if (block_count == 3)
+        else if (heal_count >= 3)
         {
-            SoundManager.Instance?.PlaySE(SoundManager.Instance.seBlockHigh);
+            SoundManager.Instance?.PlaySE(SoundManager.Instance.seHealHigh);
         }
         else if (heal_count == 2)
         {
             SoundManager.Instance?.PlaySE(SoundManager.Instance.seHealMid);
-        }
-        else if (heal_count == 3)
-        {
-            SoundManager.Instance?.PlaySE(SoundManager.Instance.seHealHigh);
         }
         else if (attack_count == 1 && block_count == 1 && heal_count == 1)
         {
@@ -163,32 +148,32 @@ public class Player_Status : MonoBehaviour
             attack_count = slot_results.attack_count;
             block_count = slot_results.block_count;
             heal_count = slot_results.heal_count;
+            curse_count = slot_results.curse_count;
         }
     }
 
-    public void Attack(int attack_count)
+    public void Attack(int count)
     {
-        if (attack_count == 3)
+        if (count >= 3)
         {
-            attack_count *= attack_bonus;
+            count *= attack_bonus;
             Debug.Log("attackが三つそろった! 相手に大ダメージ!");
         }
-        int total_attack = attack_power * (attack_count + 1) + attack_level_count * 10;
-        int enemy_damage = (int)(total_attack * speed_bonus); // 攻撃力の計算
+        int total_attack = attack_power * (count + 1) + Level_up.attackBonusTotal;
+        int enemy_damage = Mathf.RoundToInt(total_attack * speed_bonus * Level_up.GetEffectMultiplier());
         enemy.TakeDamege(enemy_damage);
     }
 
-    public void TakeDamege(int block_count, int damage)
+    public void TakeDamege(int count, int damage)
     {
-        if (block_count != 3)
+        if (count < 3)
         {
-            // 防御1つで20%、2つで40%軽減 ＋ レベルアップ1回につき固定5ダメージ軽減
-            float blockRate = Mathf.Clamp01(block_count * 0.2f * speed_bonus);
-            int reducedDamage = Mathf.RoundToInt(damage * (1f - blockRate)) - (block_level_count * 5);
+            float blockRate = Mathf.Clamp01(count * 0.2f * speed_bonus * Level_up.GetEffectMultiplier());
+            int reducedDamage = Mathf.RoundToInt(damage * (1f - blockRate)) - Level_up.blockBonusTotal;
             current_HP -= Mathf.Max(0, reducedDamage);
         }
         current_HP = Mathf.Clamp(current_HP, 0, max_HP);
-        UpdateHP(); // HPを更新
+        UpdateHP();
 
         if (current_HP <= 0)
         {
@@ -196,17 +181,33 @@ public class Player_Status : MonoBehaviour
         }
     }
 
-    private void Heal(int heal_count)
+    // デメリット絵柄（呪い）による防御無視ダメージ
+    private void TakeCurseDamage(int count)
     {
-        float total_heal = heal_count * 10f;
-        if (heal_count == 3)
+        if (current_HP <= 0) return;
+
+        int totalCurseDamage = count * curseDamage;
+        Debug.Log($"呪いの絵柄が{count}個出現！ {totalCurseDamage}のダメージ！");
+        current_HP -= totalCurseDamage;
+        current_HP = Mathf.Clamp(current_HP, 0, max_HP);
+        UpdateHP();
+
+        if (current_HP <= 0)
+        {
+            GameOver();
+        }
+    }
+
+    private void Heal(int count)
+    {
+        float total_heal = count * 10f;
+        if (count >= 3)
         {
             float bonus = (heal_bonus > 0f) ? heal_bonus : 2.0f;
             total_heal *= bonus;
             Debug.Log("healが三つそろった!");
         }
-        // 現在HP全体ではなく、回復量にだけ speed_bonus を掛ける
-        int healAmount = Mathf.RoundToInt((total_heal + heal_level_count * 10) * speed_bonus);
+        int healAmount = Mathf.RoundToInt((total_heal + Level_up.healBonusTotal) * speed_bonus * Level_up.GetEffectMultiplier());
         current_HP += healAmount;
         current_HP = Mathf.Clamp(current_HP, 0, max_HP);
         UpdateHP();
@@ -233,6 +234,9 @@ public class Player_Status : MonoBehaviour
         {
             gameOverBGM.Play();
         }
-        SceneChanger.SceneChange("ResultScene"); // シーンに戻る
+        if (SceneChanger != null)
+        {
+            SceneChanger.SceneChange("ResultScene"); // シーンに戻る
+        }
     }
 }

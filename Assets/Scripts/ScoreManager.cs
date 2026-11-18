@@ -304,13 +304,13 @@ public class ScoreManager : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = $"SCORE: {currentScore}";
+            scoreText.text = $"スコア: {currentScore}";
         }
 
         if (turnAndContinueText != null)
         {
             float mult = GetCurrentSpeedScoreMultiplier();
-            turnAndContinueText.text = $"TURN: {currentEnemyTurn}  /  CONT: {continueCount}  /  RATE: x{mult:F2}";
+            turnAndContinueText.text = $"ターン: {currentEnemyTurn}   コンティニュー回数: {continueCount}";
         }
 
         if (finalScoreText != null)

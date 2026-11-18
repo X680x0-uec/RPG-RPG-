@@ -3,20 +3,11 @@ using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
 public class SceneChanger : MonoBehaviour
-{
-    void Update()
+{    
+    [SerializeField] private SceneManager SceneManager;
+    public void SceneChange(string sceneName)
     {
-        bool isMouseClicked = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
+        SceneManager.LoadScene(sceneName);
 
-        bool isGamepadPressed = Gamepad.current != null && 
-            (Gamepad.current.buttonSouth.wasPressedThisFrame || Gamepad.current.startButton.wasPressedThisFrame);
-
-        bool isKeyboardPressed = Keyboard.current != null &&
-            (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.enterKey.wasPressedThisFrame);
-
-        if (isMouseClicked || isGamepadPressed || isKeyboardPressed)
-        {
-            SceneManager.LoadScene("BattleScene");
-        }
     }
 }

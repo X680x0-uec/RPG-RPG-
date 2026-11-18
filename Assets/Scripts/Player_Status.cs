@@ -11,7 +11,7 @@ public class Player_Status : MonoBehaviour
     [SerializeField] Slider HP_bar; // HPバーの参照
     [SerializeField] TextMeshProUGUI HP_text; // HPテキストの参照
     [SerializeField] TextMeshProUGUI gameOverText; // GAMEOVERテキストの参照
-
+    [SerializeField] public SceneChanger SceneChanger;
     [SerializeField] AudioSource gameOverBGM;
     [SerializeField] public AudioSource gameWhileBGM; // ゲーム中のBGMの参照
     [SerializeField] int attack_power; // Playerの攻撃力
@@ -21,6 +21,7 @@ public class Player_Status : MonoBehaviour
     [SerializeField] Slot_Results slot_results; // Slot_Resultsスクリプトの参照
     [SerializeField] Level_up Level_UP; // Level_upスクリプトの参照
     [SerializeField] private GameObject defaultButtonParent; // 操作ボタンの親（保険用）
+    
 
     public static float speed_bonus = 1.0f; // スピードボーナスの初期値
     int attack_count; // attackが出た数
@@ -232,5 +233,6 @@ public class Player_Status : MonoBehaviour
         {
             gameOverBGM.Play();
         }
+        SceneChanger.SceneChange("ResultScene"); // シーンに戻る
     }
 }

@@ -9,6 +9,7 @@ public class Enemy_Status : MonoBehaviour
     // 5体分のHPと攻撃力（左から1体目、2体目、3体目、4体目、5体目）
     public static List<int> Enemy_HP = new List<int> { 100, 200, 300, 400, 500 };
     public static List<int> Enemy_ATK = new List<int> { 10, 15, 20, 30, 50 };
+    public static bool isGameClear = false; // ゲームクリアかどうかのフラグ
 
     [Header("★ここに1〜5体目の敵の「画像」を5枚登録する")]
     [SerializeField] private Sprite[] enemySprites;
@@ -23,6 +24,7 @@ public class Enemy_Status : MonoBehaviour
     [SerializeField] TextMeshProUGUI HP_text;
     [SerializeField] public int damage;
     [SerializeField] public AudioSource spinBGM; 
+    [SerializeField] private SceneChanger SceneChanger;
 
     public static int currentEnemyIndex = 0; // 現在の敵の番号（0が1体目、4が5体目）
     public static bool islevelup = false;
@@ -105,7 +107,6 @@ public class Enemy_Status : MonoBehaviour
         if (currentEnemyIndex >= Enemy_HP.Count - 1)
         {
             SoundManager.Instance?.PlaySE(SoundManager.Instance.seGameClear); // 全クリア音
-
             // 5体目を倒したら敵の画像だけ非表示にする
             if (spriteRenderer != null)
             {
@@ -116,7 +117,12 @@ public class Enemy_Status : MonoBehaviour
             {
                 gameClearText.SetActive(true);
             }
+            isGameClear = true; // ゲームクリアフラグを立てる
+            yield return new WaitForSeconds(3.0f);
+            SceneChanger.SceneChange("ResultScene"); // タイトルシーンに戻る
+
             yield break;
+            
         }
 
         // 1〜4体目を倒したときはリザルト＆レベルアップ画面を出す

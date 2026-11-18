@@ -3323,7 +3323,7 @@ MonoBehaviour:
   m_text: ATK+5
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: deaa50cb08250874893f550ce8bc655d, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -6131523833266284152, guid: deaa50cb08250874893f550ce8bc655d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3347,7 +3347,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 33.35
+  m_fontSize: 40
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4327,7 +4327,7 @@ MonoBehaviour:
   m_text: HEAL+5
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: deaa50cb08250874893f550ce8bc655d, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -6131523833266284152, guid: deaa50cb08250874893f550ce8bc655d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4351,7 +4351,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26.7
+  m_fontSize: 33.3
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -5556,7 +5556,7 @@ MonoBehaviour:
   m_text: DEF+5
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: deaa50cb08250874893f550ce8bc655d, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -6131523833266284152, guid: deaa50cb08250874893f550ce8bc655d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5580,7 +5580,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 31.85
+  m_fontSize: 40
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -7883,10 +7883,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Status
   enemySprites:
-  - {fileID: 6101821313239248995, guid: a8484cca9e827b940b0c5d3675778402, type: 3}
-  - {fileID: -5264938201329035749, guid: 1678d3b42852eb64ea1fd756dfcfc378, type: 3}
-  - {fileID: 1126608537136177273, guid: ebc5a129ba8f67f4784ac749e1356f50, type: 3}
-  - {fileID: -1286610109338979004, guid: 80795f7ae7a185841a25a2ca19726504, type: 3}
+  - {fileID: 8500337599907040215, guid: 495fdde73f73e8e499be43a44e2395df, type: 3}
+  - {fileID: -2357984772437185408, guid: bdc73d583c654ba4996d03b27475ad6a, type: 3}
+  - {fileID: 7895513035427531413, guid: 97b8e65ccf27847408239595557815bc, type: 3}
+  - {fileID: -8099012239104301961, guid: 8f18014aafc027c44bf503dca6411a3c, type: 3}
   - {fileID: -2225711859535710018, guid: ecdcd7bf845645b478d8dd1ea9875da4, type: 3}
   gameClearText: {fileID: 0}
   max_HP: 100
@@ -8324,7 +8324,7 @@ RectTransform:
   m_GameObject: {fileID: 1757812441}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 640569140}
@@ -8428,7 +8428,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 99.01715}
+  m_margin: {x: 0, y: 0, z: -496.89148, w: 99.01715}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

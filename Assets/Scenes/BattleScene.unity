@@ -7735,7 +7735,7 @@ MonoBehaviour:
   HP_text: {fileID: 1200664410}
   damage: 10
   spinBGM: {fileID: 1911790427}
-  SceneChanger: {fileID: 0}
+  SceneChanger: {fileID: 2146930376}
   resultManager: {fileID: 2146930371}
 --- !u!1 &1687062469
 GameObject:

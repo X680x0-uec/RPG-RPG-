@@ -119,7 +119,7 @@ public class Enemy_Status : MonoBehaviour
             }
             isGameClear = true; // ゲームクリアフラグを立てる
             yield return new WaitForSeconds(3.0f);
-            SceneChanger.SceneChange("ResultScene"); // タイトルシーンに戻る
+            SceneChanger.SceneChange("ResultScene"); // 最終リザルト
 
             yield break;
             

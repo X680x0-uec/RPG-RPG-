@@ -16,12 +16,11 @@ public class Slot_Speed : MonoBehaviour
 
     void Start()
     {
-        // 現在の速度に合わせて初期の色を反映（初期値は 2:通常）
-        int initialSpeed = 2;
-        if (Mathf.Approximately(slot_speed, 0.5f)) initialSpeed = 1;
-        else if (Mathf.Approximately(slot_speed, 1.5f)) initialSpeed = 3;
+        // リトライ時に前のプレイの速度設定を引き継がないよう通常（1.0f）に初期化
+        slot_speed = 1.0f;
+        Slot_Spin.spin_speed = 1.0f * 300f * slot_speed;
 
-        UpdateButtonColors(initialSpeed);
+        UpdateButtonColors(2);
     }
 
     public void OnClickButton(int button_speed)

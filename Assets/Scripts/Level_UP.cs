@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems; // ★追加
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using TMPro;
 
@@ -13,6 +13,12 @@ public class Level_up : MonoBehaviour
     [SerializeField] public GameObject ButtonParent;
     public static List<int> LevelUP_Ability = new List<int>();
 
+    void Start()
+    {
+        // リトライ時に前のプレイの強化履歴が残らないようリセット
+        LevelUP_Ability.Clear();
+    }
+
     void Update()
     {
         if (Enemy_Status.islevelup == true)
@@ -24,7 +30,7 @@ public class Level_up : MonoBehaviour
             Button_next.SetActive(false);
             Enemy_Status.islevelup = false;
 
-            // ★追加: 最初のボタン（攻撃アップ）に選択カーソルを合わせる
+            // 最初のボタン（攻撃アップ）に選択カーソルを合わせる
             if (EventSystem.current != null)
             {
                 EventSystem.current.SetSelectedGameObject(null);
@@ -43,7 +49,7 @@ public class Level_up : MonoBehaviour
         LevelUPButton_heal.SetActive(false);
         Button_next.SetActive(true);
 
-        // ★追加: NEXTボタンに選択カーソルを合わせる
+        // NEXTボタンに選択カーソルを合わせる
         if (EventSystem.current != null)
         {
             EventSystem.current.SetSelectedGameObject(null);

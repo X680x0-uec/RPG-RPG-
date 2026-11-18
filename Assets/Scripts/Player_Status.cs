@@ -10,17 +10,19 @@ public class Player_Status : MonoBehaviour
     [SerializeField] int current_HP; // Playerの現在のHP
     [SerializeField] Slider HP_bar; // HPバーの参照
     [SerializeField] TextMeshProUGUI HP_text; // HPテキストの参照
-    [SerializeField] TextMeshProUGUI gameOverText; // ★追加: GAMEOVERテキストの参照
+    [SerializeField] TextMeshProUGUI gameOverText; // GAMEOVERテキストの参照
 
     [SerializeField] AudioSource gameOverBGM;
-    [SerializeField] public AudioSource gameWhileBGM; // ★追加: ゲーム中のBGMの参照
+    [SerializeField] public AudioSource gameWhileBGM; // ゲーム中のBGMの参照
     [SerializeField] int attack_power; // Playerの攻撃力
     [SerializeField] int attack_bonus; // attackが三つそろった時のボーナス値
     [SerializeField] float heal_bonus; // healが三つそろった時のボーナス値
     [SerializeField] Enemy_Status enemy; // Enemy_Statusスクリプトの参照
     [SerializeField] Slot_Results slot_results; // Slot_Resultsスクリプトの参照
     [SerializeField] Level_up Level_UP; // Level_upスクリプトの参照
-    public static float speed_bonus = 1.0f; // ★追加: スピードボーナスの初期値
+    [SerializeField] private GameObject defaultButtonParent; // 操作ボタンの親（保険用）
+
+    public static float speed_bonus = 1.0f; // スピードボーナスの初期値
     int attack_count; // attackが出た数
     int block_count; // blockが出た数
     int heal_count; // healが出た数
@@ -30,25 +32,23 @@ public class Player_Status : MonoBehaviour
 
     [Header("効果音の間隔（秒）")]
     [SerializeField] private float seInterval = 0.4f; // 音が重ならないための待機時間
-    
 
     void Start()
     {
-        current_HP = max_HP; // PlyerのHPを最大HPに設定
-        
-        // ★追加: ゲーム開始時はGAMEOVERテキストを非表示にする
+        current_HP = max_HP; // PlayerのHPを最大HPに設定
+        speed_bonus = 1.0f;  // リトライ時の速度ボーナス引き継ぎ防止
+
         if (gameOverText != null)
         {
             gameOverText.gameObject.SetActive(false);
         }
 
-        UpdateHP(); // HPを更新
+        UpdateHP();
         slot_results = FindAnyObjectByType<Slot_Results>();
     }
 
     void Update()
     {
-        
     }
 
     public void OnAllSlotsStopped(GameObject buttonParent = null)
@@ -59,10 +59,16 @@ public class Player_Status : MonoBehaviour
     // 音が重ならないように時間差で順番に処理するコルーチン
     private IEnumerator BattleSequence(GameObject buttonParent)
     {
+        if (buttonParent == null)
+        {
+            buttonParent = defaultButtonParent;
+        }
+
         attack_level_count = 0;
         block_level_count = 0;
         heal_level_count = 0;
         GetSlotResults(); // 各カウント数の取得
+
         int Level = Level_up.LevelUP_Ability.Count;
         for (int i = 0; i < Level; i++)
         {
@@ -96,14 +102,17 @@ public class Player_Status : MonoBehaviour
             Heal(heal_count);
         }
         TakeDamege(block_count, Enemy_Status.Enemy_ATK[Enemy_Status.currentEnemyIndex]); // ダメージ処理
-        
+
         // 生きている時だけ敵へ攻撃する
         if (current_HP > 0)
         {
-            Attack(attack_count);
+            if (attack_count > 0)
+            {
+                Attack(attack_count);
+            }
 
             // 敵を倒していなければ操作ボタンを再表示する
-            if (enemy != null && !enemy.IsDead() && Enemy_Status.islevelup != true)
+            if (enemy != null && !enemy.IsDead() && !Enemy_Status.islevelup)
             {
                 if (buttonParent != null)
                 {
@@ -164,21 +173,22 @@ public class Player_Status : MonoBehaviour
             Debug.Log("attackが三つそろった! 相手に大ダメージ!");
         }
         int total_attack = attack_power * (attack_count + 1) + attack_level_count * 10;
-        int enemy_damage = (int)(total_attack * speed_bonus) ; // 攻撃力の計算
+        int enemy_damage = (int)(total_attack * speed_bonus); // 攻撃力の計算
         enemy.TakeDamege(enemy_damage);
     }
-    
+
     public void TakeDamege(int block_count, int damage)
     {
         if (block_count != 3)
         {
-            int total_block = (int)(block_count * 0.2f  - block_level_count * 5);
-            current_HP -= (int)(damage - damage  *total_block* speed_bonus); // ダメージ計算
+            // 防御1つで20%、2つで40%軽減 ＋ レベルアップ1回につき固定5ダメージ軽減
+            float blockRate = Mathf.Clamp01(block_count * 0.2f * speed_bonus);
+            int reducedDamage = Mathf.RoundToInt(damage * (1f - blockRate)) - (block_level_count * 5);
+            current_HP -= Mathf.Max(0, reducedDamage);
         }
         current_HP = Mathf.Clamp(current_HP, 0, max_HP);
         UpdateHP(); // HPを更新
 
-        // ★追加: HPが0以下になったらゲームオーバー処理を行う
         if (current_HP <= 0)
         {
             GameOver();
@@ -190,12 +200,13 @@ public class Player_Status : MonoBehaviour
         float total_heal = heal_count * 10f;
         if (heal_count == 3)
         {
-            total_heal *= heal_bonus;
+            float bonus = (heal_bonus > 0f) ? heal_bonus : 2.0f;
+            total_heal *= bonus;
             Debug.Log("healが三つそろった!");
         }
-        int healAmount = (int)(total_heal + heal_level_count * 10);
-        current_HP += healAmount; // 回復量の計算
-        current_HP = (int)(current_HP * speed_bonus);
+        // 現在HP全体ではなく、回復量にだけ speed_bonus を掛ける
+        int healAmount = Mathf.RoundToInt((total_heal + heal_level_count * 10) * speed_bonus);
+        current_HP += healAmount;
         current_HP = Mathf.Clamp(current_HP, 0, max_HP);
         UpdateHP();
     }
@@ -206,7 +217,6 @@ public class Player_Status : MonoBehaviour
         HP_text.text = $"Player: HP {current_HP}";
     }
 
-    // ★追加: GAMEOVER表示処理
     private void GameOver()
     {
         if (gameWhileBGM != null)

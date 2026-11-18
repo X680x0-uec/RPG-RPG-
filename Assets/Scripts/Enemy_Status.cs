@@ -8,7 +8,7 @@ public class Enemy_Status : MonoBehaviour
 {
     // 5体分のHPと攻撃力（左から1体目、2体目、3体目、4体目、5体目）
     public static List<int> Enemy_HP = new List<int> { 100, 200, 300, 400, 500 };
-    public static List<int> Enemy_ATK = new List<int> { 10, 30, 80, 50, 200 };
+    public static List<int> Enemy_ATK = new List<int> { 10, 15, 20, 30, 50 };
 
     [Header("★ここに1〜5体目の敵の「画像」を5枚登録する")]
     [SerializeField] private Sprite[] enemySprites;
@@ -99,7 +99,6 @@ public class Enemy_Status : MonoBehaviour
         if (currentEnemyIndex >= Enemy_HP.Count - 1)
         {
             SoundManager.Instance?.PlaySE(SoundManager.Instance.seGameClear); // 全クリア音
-            islevelup = true;
 
             // 5体目を倒したら敵の画像だけ非表示にする
             if (spriteRenderer != null)

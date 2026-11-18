@@ -293,7 +293,7 @@ MonoBehaviour:
   - {fileID: 1851959737}
   isStopped: 0
   slot_error: 0
-  ButtonParent: {fileID: 0}
+  ButtonParent: {fileID: 697925449}
   defaultSpeed: 1
 --- !u!4 &34763474
 Transform:
@@ -1144,6 +1144,7 @@ MonoBehaviour:
   attack_count: 0
   block_count: 0
   heal_count: 0
+  spinBGM: {fileID: 0}
 --- !u!4 &248202099
 Transform:
   m_ObjectHideFlags: 0
@@ -1176,6 +1177,7 @@ MonoBehaviour:
   - {fileID: 34763473}
   - {fileID: 666195057}
   ButtonParent: {fileID: 697925449}
+  spinBGM: {fileID: 0}
 --- !u!1 &251815426
 GameObject:
   m_ObjectHideFlags: 0
@@ -1304,8 +1306,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoundManager
   seSource: {fileID: 251815427}
-  seSlotStart: {fileID: 0}
-  seSlotStop: {fileID: 0}
+  seSlotStart: {fileID: 8300000, guid: 2b64dc277758c65498959e2000ef5d38, type: 3}
+  seSlotStop: {fileID: 8300000, guid: 2b64dc277758c65498959e2000ef5d38, type: 3}
   seSpeedChange: {fileID: 0}
   seAttackMid: {fileID: 8300000, guid: 5ee59128b0133254680b60ea88f159a0, type: 3}
   seAttackHigh: {fileID: 8300000, guid: cc3e199026f3d1a41966e69f48742047, type: 3}
@@ -4237,7 +4239,7 @@ MonoBehaviour:
   - {fileID: 1620636503}
   isStopped: 0
   slot_error: 0
-  ButtonParent: {fileID: 0}
+  ButtonParent: {fileID: 697925449}
   defaultSpeed: 1
 --- !u!4 &986443217
 Transform:
@@ -5969,6 +5971,7 @@ MonoBehaviour:
   enemy: {fileID: 1647290604}
   slot_results: {fileID: 248202098}
   Level_UP: {fileID: 0}
+  defaultButtonParent: {fileID: 697925449}
   seInterval: 0
 --- !u!1 &1364002878
 GameObject:

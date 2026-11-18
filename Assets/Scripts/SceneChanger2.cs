@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 
 public class SceneChanger2 : MonoBehaviour
 {
+    public AudioSource openingBGM; // オープニングBGMの参照
     void Update()
     {
         bool isMouseClicked = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
@@ -17,6 +18,10 @@ public class SceneChanger2 : MonoBehaviour
         if (isMouseClicked || isGamepadPressed || isKeyboardPressed)
         {
             ScoreManager.ResetForNewGame();
+            if (openingBGM != null)
+            {
+                openingBGM.Stop(); // BGMを停止
+            }
             SceneManager.LoadScene("BattleScene");
         }
     }

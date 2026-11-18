@@ -73,6 +73,10 @@ public class Level_up : MonoBehaviour
                 break;
             default: // 4体目撃破：ステータスアップ大
                 SetTexts("攻撃アップ（大）", "防御アップ（大）", "回復アップ（大）");
+                if(SoundManager.Instance != null && SoundManager.Instance.BossAppear != null)
+                {
+                    SoundManager.Instance.PlaySE(SoundManager.Instance.BossAppear); // ボス登場音を再生
+                }
                 if(gameWhileBGM != null)
                 {
                     gameWhileBGM.Stop(); // 4体目撃破時にBGMを止める

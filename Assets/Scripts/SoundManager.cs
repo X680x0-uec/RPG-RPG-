@@ -26,6 +26,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip seGameClear;     // 全5体クリア
     public AudioClip seLevelUpSelect; // 能力選択ボタン
     public AudioClip seNextButton;    // NEXTボタン
+    public AudioClip BossAppear;      // ボス登場音
 
     private void Awake()
     {

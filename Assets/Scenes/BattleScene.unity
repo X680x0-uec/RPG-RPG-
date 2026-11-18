@@ -1322,6 +1322,7 @@ MonoBehaviour:
   seGameClear: {fileID: 0}
   seLevelUpSelect: {fileID: 0}
   seNextButton: {fileID: 0}
+  BossAppear: {fileID: 8300000, guid: 35ef95dcb946f0d48a1f4dea231c5e0c, type: 3}
 --- !u!4 &251815429
 Transform:
   m_ObjectHideFlags: 0

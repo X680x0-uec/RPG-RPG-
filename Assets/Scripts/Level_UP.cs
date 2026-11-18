@@ -33,6 +33,46 @@ public class Level_up : MonoBehaviour
         blockBonusTotal = 0;
         healBonusTotal = 0;
         acquiredSkill = 0;
+
+        // カーソルがHPバーなど外部のUIへ逃げないようにナビゲーションを固定
+        SetupButtonNavigation();
+    }
+
+    // 3つの強化ボタン内だけでカーソルが循環し、NEXTボタンからは移動しない設定
+    private void SetupButtonNavigation()
+    {
+        Selectable atkSel  = LevelUPButton_attack != null ? LevelUPButton_attack.GetComponent<Selectable>() : null;
+        Selectable blkSel  = LevelUPButton_block  != null ? LevelUPButton_block.GetComponent<Selectable>()  : null;
+        Selectable healSel = LevelUPButton_heal   != null ? LevelUPButton_heal.GetComponent<Selectable>()   : null;
+        Selectable nextSel = Button_next          != null ? Button_next.GetComponent<Selectable>()          : null;
+
+        if (atkSel != null && blkSel != null && healSel != null)
+        {
+            // 横並び・縦並びどちらのレイアウトでも3ボタン内だけをループさせる
+            SetExplicitLoop(atkSel,  prev: healSel, next: blkSel);
+            SetExplicitLoop(blkSel,  prev: atkSel,  next: healSel);
+            SetExplicitLoop(healSel, prev: blkSel,  next: atkSel);
+        }
+
+        if (nextSel != null)
+        {
+            Navigation nav = nextSel.navigation;
+            nav.mode = Navigation.Mode.None;
+            nextSel.navigation = nav;
+        }
+    }
+
+    private void SetExplicitLoop(Selectable target, Selectable prev, Selectable next)
+    {
+        Navigation nav = new Navigation
+        {
+            mode = Navigation.Mode.Explicit,
+            selectOnLeft  = prev,
+            selectOnUp    = prev,
+            selectOnRight = next,
+            selectOnDown  = next
+        };
+        target.navigation = nav;
     }
 
     void Update()
@@ -49,12 +89,44 @@ public class Level_up : MonoBehaviour
             Enemy_Status.islevelup = false;
 
             // 最初のボタンに選択カーソルを合わせる
-            if (EventSystem.current != null)
+            SelectUI(LevelUPButton_attack);
+        }
+
+        // レベルアップ選択中やNEXT表示中に、別のUI（HPバー等）へフォーカスが外れたら戻す
+        KeepFocusOnActiveLevelUpUI();
+    }
+
+    private void KeepFocusOnActiveLevelUpUI()
+    {
+        if (EventSystem.current == null) return;
+
+        GameObject current = EventSystem.current.currentSelectedGameObject;
+
+        // 強化ボタン3つが表示中のとき
+        if (LevelUPButton_attack != null && LevelUPButton_attack.activeInHierarchy)
+        {
+            if (current != LevelUPButton_attack &&
+                current != LevelUPButton_block &&
+                current != LevelUPButton_heal)
             {
-                EventSystem.current.SetSelectedGameObject(null);
-                EventSystem.current.SetSelectedGameObject(LevelUPButton_attack);
+                SelectUI(LevelUPButton_attack);
             }
         }
+        // NEXTボタンが表示中のとき
+        else if (Button_next != null && Button_next.activeInHierarchy)
+        {
+            if (current != Button_next)
+            {
+                SelectUI(Button_next);
+            }
+        }
+    }
+
+    private void SelectUI(GameObject target)
+    {
+        if (EventSystem.current == null || target == null) return;
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(target);
     }
 
     // 倒した敵の番号（0:1体目, 1:2体目, 2:3体目, 3:4体目）に応じてボタン表示を変更
@@ -73,15 +145,15 @@ public class Level_up : MonoBehaviour
                 break;
             default: // 4体目撃破：ステータスアップ大
                 SetTexts("攻撃アップ（大）", "防御アップ（大）", "回復アップ（大）");
-                if(SoundManager.Instance != null && SoundManager.Instance.BossAppear != null)
+                if (SoundManager.Instance != null && SoundManager.Instance.BossAppear != null)
                 {
                     SoundManager.Instance.PlaySE(SoundManager.Instance.BossAppear); // ボス登場音を再生
                 }
-                if(gameWhileBGM != null)
+                if (gameWhileBGM != null)
                 {
                     gameWhileBGM.Stop(); // 4体目撃破時にBGMを止める
                 }
-                if(lastBossBGM != null)
+                if (lastBossBGM != null)
                 {
                     lastBossBGM.Play(); // 4体目撃破時にラスボスBGMを再生
                 }
@@ -140,7 +212,7 @@ public class Level_up : MonoBehaviour
             }
 
             Slot_Spin.spin_speed = Slot_Speed.GetCurrentSpinSpeed();
-            ScoreManager.Instance?.UpdateAllUI(); // ★追加：スキルによる速度倍率変化をUIへ即反映
+            ScoreManager.Instance?.UpdateAllUI();
             Debug.Log($"スキル獲得: {acquiredSkill} / ATK+{attackBonusTotal}, BLK+{blockBonusTotal}, HEAL+{healBonusTotal}");
         }
         else
@@ -165,11 +237,7 @@ public class Level_up : MonoBehaviour
         Button_next.SetActive(true);
 
         // NEXTボタンに選択カーソルを合わせる
-        if (EventSystem.current != null)
-        {
-            EventSystem.current.SetSelectedGameObject(null);
-            EventSystem.current.SetSelectedGameObject(Button_next);
-        }
+        SelectUI(Button_next);
     }
 
     // スキルによるリール回転速度の倍率

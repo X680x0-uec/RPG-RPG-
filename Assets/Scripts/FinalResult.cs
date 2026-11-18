@@ -9,6 +9,7 @@ public class FinalResult : MonoBehaviour
     public GameObject gameOverText;   // ゲームオーバー時に表示するテキスト
     public GameObject continueButton; // ★追加：コンティニューボタンの参照
     public AudioSource gameOverBGM;   // ゲームオーバー時に再生するBGM
+    public AudioSource gameClearBGM;   // ゲームクリア時に再生するBGM
 
     void Start()
     {
@@ -16,6 +17,7 @@ public class FinalResult : MonoBehaviour
         {
             if (gameClearText != null) gameClearText.SetActive(true);
             if (continueButton != null) continueButton.SetActive(false); // クリア時は非表示
+            if (gameClearBGM != null) gameClearBGM.Play();
         }
         else
         {

@@ -239,11 +239,6 @@ public class Player_Status : MonoBehaviour
         {
             gameOverText.gameObject.SetActive(true); // テキストを表示する
         }
-        if (gameOverBGM != null)
-        {
-            gameOverBGM.Play();
-        }
-
         // ★追加：ゲームオーバー時点のスコアをランキングに登録
         ScoreManager.Instance?.FinalizeGameScore(false);
 

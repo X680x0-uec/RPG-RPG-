@@ -12,13 +12,14 @@ public class ScoreManager : MonoBehaviour
     public static int continueCount = 0;
     public static int currentEnemyTurn = 0;
     public static int lastNewRank = 0; // 今回ランクインした順位（1〜5、圏外は0）
+    public static bool isContinueing = false; // コンティニュー中かどうかのフラグ
 
     [Header("スコア加算設定")]
     [SerializeField] private int twoMatchBaseScore = 100;   // 2つ揃い基本点
     [SerializeField] private int threeMatchBaseScore = 300; // 3つ揃い基本点
     [SerializeField] private int turnBonusUnit = 100;       // 早期撃破ボーナス単価
     [SerializeField] private int targetMaxTurns = 10;       // ボーナス対象の上限ターン数
-    [SerializeField] private int continueBonusUnit = 500;   // 低コンティニューボーナス単価
+    [SerializeField] private int continueBonusUnit = 3000;   // 低コンティニューボーナス単価
 
     [Header("呪い揃い時のスコア減少設定")]
     [SerializeField] private int curseTwoMatchPenalty = 100;          // 呪い2つ揃い減少点
@@ -93,6 +94,7 @@ public class ScoreManager : MonoBehaviour
     {
         continueCount++;
         currentEnemyTurn = 0;
+        isContinueing = true;
         lastNewRank = 0;
     }
 

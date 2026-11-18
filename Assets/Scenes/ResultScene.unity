@@ -771,6 +771,7 @@ MonoBehaviour:
   gameOverText: {fileID: 480010981}
   continueButton: {fileID: 1953765632}
   gameOverBGM: {fileID: 785946602}
+  gameClearBGM: {fileID: 2134763270}
   titleOrRetryButton: {fileID: 563688795}
 --- !u!1 &785946601
 GameObject:

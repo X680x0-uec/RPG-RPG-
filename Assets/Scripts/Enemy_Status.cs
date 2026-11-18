@@ -24,6 +24,7 @@ public class Enemy_Status : MonoBehaviour
     [SerializeField] public int damage;
     [SerializeField] public AudioSource spinBGM;
     [SerializeField] private SceneChanger SceneChanger;
+    [SerializeField] private ScoreManager ScoreManager;
 
     public static int currentEnemyIndex = 0;
     public static bool islevelup = false;
@@ -39,7 +40,11 @@ public class Enemy_Status : MonoBehaviour
             spriteRenderer.enabled = true;
         }
 
-        currentEnemyIndex = 0;
+        if(ScoreManager.isContinueing == false)
+        {
+            currentEnemyIndex = 0;
+        }
+        ScoreManager.isContinueing = false; // コンティニュー後の再プレイ時にリセット
         islevelup = false;
         isGameClear = false; // 再プレイ時にクリアフラグをリセット
 

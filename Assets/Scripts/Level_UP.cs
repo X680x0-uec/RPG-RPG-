@@ -11,6 +11,8 @@ public class Level_up : MonoBehaviour
     [SerializeField] private GameObject LevelUPButton_heal;
     [SerializeField] private GameObject Button_next;
     [SerializeField] public GameObject ButtonParent;
+    [SerializeField] public AudioSource gameWhileBGM; // ゲーム中のBGMの参照
+    [SerializeField] public AudioSource lastBossBGM; // ラスボスBGMの参照
 
     // 互換性維持用リスト
     public static List<int> LevelUP_Ability = new List<int>();
@@ -71,6 +73,14 @@ public class Level_up : MonoBehaviour
                 break;
             default: // 4体目撃破：ステータスアップ大
                 SetTexts("攻撃アップ（大）", "防御アップ（大）", "回復アップ（大）");
+                if(gameWhileBGM != null)
+                {
+                    gameWhileBGM.Stop(); // 4体目撃破時にBGMを止める
+                }
+                if(lastBossBGM != null)
+                {
+                    lastBossBGM.Play(); // 4体目撃破時にラスボスBGMを再生
+                }
                 break;
         }
     }

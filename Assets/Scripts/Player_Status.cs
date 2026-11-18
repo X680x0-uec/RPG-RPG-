@@ -14,6 +14,7 @@ public class Player_Status : MonoBehaviour
     [SerializeField] public SceneChanger SceneChanger;
     [SerializeField] AudioSource gameOverBGM;
     [SerializeField] public AudioSource gameWhileBGM; // ゲーム中のBGMの参照
+    [SerializeField] public AudioSource lastBossBGM; // ラスボスBGMの参照
     [SerializeField] int attack_power; // Playerの攻撃力
     [SerializeField] int attack_bonus; // attackが三つそろった時のボーナス値
     [SerializeField] float heal_bonus; // healが三つそろった時のボーナス値
@@ -233,6 +234,10 @@ public class Player_Status : MonoBehaviour
         if (gameOverBGM != null)
         {
             gameOverBGM.Play();
+        }
+        if (lastBossBGM != null)
+        {
+            lastBossBGM.Play();
         }
         if (SceneChanger != null)
         {

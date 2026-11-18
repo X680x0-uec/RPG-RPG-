@@ -11,34 +11,72 @@ public class Slot_Stop : MonoBehaviour
     public bool isStopped = false; // false→スロットが回転中、true→スロットが止まっている
     private bool isResulted = false; // false→count未集計、true→count集計済み
     public int slot_error = 0; // スロットのずれを格納する変数
-    int slot_error_min = 1000; // スロットのずれの最小値を格納する変数
     string slot_flag = "false"; // スロットの回転を止めるためのフラグ
 
     [SerializeField] public GameObject ButtonParent;
-    [SerializeField] private float defaultSpeed = 1.0f;
+
+    private const float CenterY = -275.0f;
+    private const float SymbolSpacing = 290.0f / 3f; // 3枚で1周290fになる均等間隔（約96.67f）
 
     void Start()
     {
+        for (int i = 0; i < slot_spin.Length; i++)
+        {
+            if (slot_spin[i] != null)
+            {
+                slot_spin[i].SetParentReel(this);
+            }
+        }
+
+        // ゲーム開始時に3枚の絵柄を中央(-275f)基準の均等な位置へ自動整列させる
+        AlignInitialPositions();
     }
 
-    void Update()
+    private void AlignInitialPositions()
     {
-        if (slot_flag == "true") // スロットの回転を止めるためのフラグが立っている場合
+        if (image_location == null) return;
+
+        for (int i = 0; i < image_location.Length; i++)
         {
-            if (image_location[slot_error].anchoredPosition.y < -275.0f) // スロットのずれが真ん中より大きくなったら
+            if (image_location[i] != null)
             {
-                StopSlot(slot_spin.Length); // スロットの回転を止める
-                SoundManager.Instance?.PlaySE(SoundManager.Instance.seSlotStop); // リール停止音
-                slot_flag = "false"; // スロットの回転を止めるためのフラグを下ろす
-                isStopped = true; // 停止したスロットのisStoppedをtrueにする
-                TriggerResult(); // countの集計
+                Vector2 pos = image_location[i].anchoredPosition;
+                // 0番目:上(-178.33f), 1番目:中央(-275.0f), 2番目:下(-371.67f)
+                pos.y = CenterY + (1 - i) * SymbolSpacing;
+                image_location[i].anchoredPosition = pos;
             }
         }
     }
 
-    public void OnClickButton() // ボタンが押された時の処理
+    void Update()
     {
-        // すでに停止済み、または停止処理中なら無視する
+        if (slot_flag == "true")
+        {
+            if (image_location[slot_error].anchoredPosition.y <= CenterY)
+            {
+                // 通り過ぎたズレ分を計算し、リール内の全絵柄をぴったり中央（-275.0f）に補正する
+                float snapOffset = CenterY - image_location[slot_error].anchoredPosition.y;
+                for (int i = 0; i < image_location.Length; i++)
+                {
+                    if (image_location[i] != null)
+                    {
+                        Vector2 pos = image_location[i].anchoredPosition;
+                        pos.y += snapOffset;
+                        image_location[i].anchoredPosition = pos;
+                    }
+                }
+
+                StopSlot(slot_spin.Length);
+                SoundManager.Instance?.PlaySE(SoundManager.Instance.seSlotStop);
+                slot_flag = "false";
+                isStopped = true;
+                TriggerResult();
+            }
+        }
+    }
+
+    public void OnClickButton()
+    {
         if (isStopped || slot_flag == "true") return;
 
         float minDistance = float.MaxValue;
@@ -47,7 +85,7 @@ public class Slot_Stop : MonoBehaviour
 
         for (int i = 0; i < image_location.Length; i++)
         {
-            float centerOffset = image_location[i].anchoredPosition.y + 275.0f;
+            float centerOffset = image_location[i].anchoredPosition.y - CenterY;
             if (centerOffset > 0f && centerOffset < minDistance)
             {
                 minDistance = centerOffset;
@@ -56,12 +94,11 @@ public class Slot_Stop : MonoBehaviour
             }
         }
 
-        // すべて判定ラインより下だった場合は一番近い図柄を選ぶ（すり抜け防止）
         if (!foundAbove)
         {
             for (int i = 0; i < image_location.Length; i++)
             {
-                float dist = Mathf.Abs(image_location[i].anchoredPosition.y + 275.0f);
+                float dist = Mathf.Abs(image_location[i].anchoredPosition.y - CenterY);
                 if (dist < minDistance)
                 {
                     minDistance = dist;
@@ -71,44 +108,39 @@ public class Slot_Stop : MonoBehaviour
         }
 
         slot_error = bestIndex;
-        Debug.Log(slot_error);
-        Debug.Log(image_location[slot_error].anchoredPosition.y);
-
-        slot_flag = "true"; // スロットの回転を止めるためのフラグを立てる
+        slot_flag = "true";
     }
 
     private void TriggerResult()
     {
-        // すべてのスロットが止まっていて、count未集計の時に実行
         if (slot_results != null && slot_results.AllStopped() && !isResulted)
         {
-            isResulted = true; // count集計済みになるのでisResultedをtrueにする
-            slot_results.CountSlot(slot_results.slot_reels); // countSlot関数の呼び出し
+            isResulted = true;
+            slot_results.CountSlot(slot_results.slot_reels);
             slot_results.StopSpinBGM();
             player.OnAllSlotsStopped(ButtonParent);
         }
     }
 
-    public void StopSlot(int n) // スロットの回転を止めるための関数
+    public void StopSlot(int n)
     {
         for (int i = 0; i < n; i++)
         {
-            slot_spin[i].enabled = false; // その列のスロットの回転を止める
+            slot_spin[i].enabled = false;
         }
     }
 
-    public void RestartSlot(int n) // スロットの回転を再開するための関数
+    public void RestartSlot(int n)
     {
-        isStopped = false; // スロットの回転が再開したのでisStoppedをfalseに戻す
-        isResulted = false; // isResultedも同様にfalseに戻す
-        slot_flag = "false"; // 停止用フラグも初期化する
+        isStopped = false;
+        isResulted = false;
+        slot_flag = "false";
 
-        // プレイヤーが選択中の速度（Slot_Speed.slot_speed）を維持して再開する
         Slot_Spin.spin_speed = 1.0f * 300f * Slot_Speed.slot_speed;
 
         for (int i = 0; i < n; i++)
         {
-            slot_spin[i].enabled = true; // その列のスロットの回転を再開する
+            slot_spin[i].enabled = true;
         }
     }
 }

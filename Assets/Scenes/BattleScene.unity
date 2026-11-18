@@ -1315,7 +1315,7 @@ MonoBehaviour:
   seHealMid: {fileID: 8300000, guid: 8959c3442b11eff48994cae3455e1b9a, type: 3}
   seHealHigh: {fileID: 8300000, guid: 792fdc2c7aed5b845b2b8df64c675b80, type: 3}
   seMatchAllOne: {fileID: 8300000, guid: 43e3d21ab1aaab64ab414a928585bacc, type: 3}
-  seEnemyDefeat: {fileID: 0}
+  seEnemyDefeat: {fileID: 8300000, guid: f5b2cef82f4eeee4d8d0ed687de83256, type: 3}
   seGameClear: {fileID: 0}
   seLevelUpSelect: {fileID: 0}
   seNextButton: {fileID: 0}

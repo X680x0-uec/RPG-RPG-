@@ -6787,6 +6787,8 @@ MonoBehaviour:
   slot_results: {fileID: 248202098}
   Level_UP: {fileID: 0}
   defaultButtonParent: {fileID: 697925449}
+  continueYesButton: {fileID: 1529017640}
+  continueNoButton: {fileID: 791396556}
   curseDamage: 15
   seInterval: 0
 --- !u!1 &1364002878
@@ -8345,6 +8347,7 @@ MonoBehaviour:
   slotRestart: {fileID: 248202100}
   slotSpeed: {fileID: 2146930374}
   buttonParent: {fileID: 697925449}
+  playerStatus: {fileID: 0}
 --- !u!4 &1623486991
 Transform:
   m_ObjectHideFlags: 0

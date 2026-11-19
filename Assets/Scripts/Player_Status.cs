@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -25,6 +26,10 @@ public class Player_Status : MonoBehaviour
     [SerializeField] Level_up Level_UP; // Level_upスクリプトの参照
     [SerializeField] private GameObject defaultButtonParent; // 操作ボタンの親（保険用）
 
+    [Header("コンティニュー画面のボタン（未設定でも自動検出します）")]
+    [SerializeField] private GameObject continueYesButton; // 「コンティニューする」ボタン
+    [SerializeField] private GameObject continueNoButton;  // 「諦める（ゲームオーバー）」ボタン
+
     [Header("デメリット絵柄（呪い）1つあたりの自傷ダメージ")]
     [SerializeField] private int curseDamage = 15;
 
@@ -36,6 +41,8 @@ public class Player_Status : MonoBehaviour
 
     [Header("効果音の間隔（秒）")]
     [SerializeField] private float seInterval = 0.4f; // 音が重ならないための待機時間
+
+    private List<Selectable> continueButtons = new List<Selectable>();
 
     void Start()
     {
@@ -56,6 +63,15 @@ public class Player_Status : MonoBehaviour
         slot_results = FindAnyObjectByType<Slot_Results>();
     }
 
+    void Update()
+    {
+        // コンティニュー画面表示中はカーソルが外れないように監視
+        if (continuePanel != null && continuePanel.activeInHierarchy)
+        {
+            KeepFocusOnContinuePanel();
+        }
+    }
+
     public void OnAllSlotsStopped(GameObject buttonParent = null)
     {
         StartCoroutine(BattleSequence(buttonParent));
@@ -71,7 +87,7 @@ public class Player_Status : MonoBehaviour
 
         GetSlotResults(); // 各カウント数の取得
 
-        // ★追加：ターン経過＆絵柄揃いスコア増減（呪い揃いの減少も含む）
+        // ターン経過＆絵柄揃いスコア増減（呪い揃いの減少も含む）
         ScoreManager.Instance?.OnTurnPassed();
         ScoreManager.Instance?.AddMatchScore(attack_count, block_count, heal_count, curse_count);
 
@@ -225,20 +241,114 @@ public class Player_Status : MonoBehaviour
         HP_bar.value = (float)current_HP / max_HP;
         HP_text.text = $"Player: HP {current_HP}";
     }
+
     private void ContinuePanel()
     {
         if (continuePanel != null)
         {
             continuePanel.SetActive(true);
-            gameWhileBGM.Stop(); 
-            lastBossBGM.Stop();
+            if (gameWhileBGM != null) gameWhileBGM.Stop();
+            if (lastBossBGM != null) lastBossBGM.Stop();
+
+            SetupContinuePanelFocus();
         }
     }
+
+    // コンティニューパネル内のボタン収集とコントローラー用ナビゲーション設定
+    private void SetupContinuePanelFocus()
+    {
+        continueButtons.Clear();
+
+        AddIfActiveButton(continueYesButton);
+        AddIfActiveButton(continueNoButton);
+
+        // インスペクター未設定でもパネル内の有効なButtonを自動検出
+        Button[] childButtons = continuePanel.GetComponentsInChildren<Button>(true);
+        foreach (Button btn in childButtons)
+        {
+            if (btn != null && btn.gameObject.activeSelf && btn.interactable && !continueButtons.Contains(btn))
+            {
+                continueButtons.Add(btn);
+            }
+        }
+
+        int count = continueButtons.Count;
+        if (count == 0) return;
+
+        if (count == 1)
+        {
+            Navigation nav = continueButtons[0].navigation;
+            nav.mode = Navigation.Mode.None;
+            continueButtons[0].navigation = nav;
+        }
+        else
+        {
+            // 上下左右のどの方向キーでもボタン間をループ移動できるように設定
+            for (int i = 0; i < count; i++)
+            {
+                Selectable prev = continueButtons[(i - 1 + count) % count];
+                Selectable next = continueButtons[(i + 1) % count];
+
+                Navigation nav = new Navigation
+                {
+                    mode = Navigation.Mode.Explicit,
+                    selectOnUp    = prev,
+                    selectOnLeft  = prev,
+                    selectOnDown  = next,
+                    selectOnRight = next
+                };
+                continueButtons[i].navigation = nav;
+            }
+        }
+
+        SelectUI(continueButtons[0].gameObject);
+    }
+
+    private void AddIfActiveButton(GameObject obj)
+    {
+        if (obj == null || !obj.activeSelf) return;
+
+        Selectable sel = obj.GetComponent<Selectable>();
+        if (sel != null && sel.interactable && !continueButtons.Contains(sel))
+        {
+            continueButtons.Add(sel);
+        }
+    }
+
+    private void KeepFocusOnContinuePanel()
+    {
+        if (EventSystem.current == null || continueButtons.Count == 0) return;
+
+        GameObject current = EventSystem.current.currentSelectedGameObject;
+        if (current == null || !current.activeInHierarchy)
+        {
+            SelectUI(continueButtons[0].gameObject);
+            return;
+        }
+
+        Selectable currentSel = current.GetComponent<Selectable>();
+        if (currentSel == null || !continueButtons.Contains(currentSel))
+        {
+            SelectUI(continueButtons[0].gameObject);
+        }
+    }
+
+    private void SelectUI(GameObject target)
+    {
+        if (EventSystem.current == null || target == null) return;
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(target);
+    }
+
     public void ContinueGameButton()
     {
         if (continuePanel != null)
         {
             continuePanel.SetActive(false);
+        }
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
         }
         if (Enemy_Status.currentEnemyIndex == 4)
         {
@@ -261,6 +371,7 @@ public class Player_Status : MonoBehaviour
         current_HP = max_HP; // HPを最大値に戻す
         UpdateHP();
     }
+
     public void GameOver()
     {
         if (gameWhileBGM != null)
@@ -269,14 +380,14 @@ public class Player_Status : MonoBehaviour
         }
         if (lastBossBGM != null)
         {
-            lastBossBGM.Stop(); // ★修正：ゲームオーバー時はラスボスBGMも停止
+            lastBossBGM.Stop(); // ゲームオーバー時はラスボスBGMも停止
         }
         Debug.Log("GAME OVER...");
         if (gameOverText != null)
         {
             gameOverText.gameObject.SetActive(true); // テキストを表示する
         }
-        // ★追加：ゲームオーバー時点のスコアをランキングに登録
+        // ゲームオーバー時点のスコアをランキングに登録
         ScoreManager.Instance?.FinalizeGameScore(false);
 
         if (SceneChanger != null)

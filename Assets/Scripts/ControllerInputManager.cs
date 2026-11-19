@@ -9,8 +9,32 @@ public class ControllerInputManager : MonoBehaviour
     [SerializeField] private Slot_Speed slotSpeed;       // Slot_Speedをセット
     [SerializeField] private GameObject buttonParent;    // 操作ボタンの親オブジェクト
 
+    [Header("コンティニュー画面の参照（未設定でも自動検出します）")]
+    [SerializeField] private Player_Status playerStatus;
+    private int inputBlockFrames = 0;
+
+    void Start()
+    {
+        if (playerStatus == null)
+        {
+            playerStatus = FindAnyObjectByType<Player_Status>();
+        }
+    }
+
     void Update()
     {
+        // コンティニュー画面表示中、および閉じた直後の2フレームはスロット入力をブロック
+        if (playerStatus != null && playerStatus.continuePanel != null && playerStatus.continuePanel.activeInHierarchy)
+        {
+            inputBlockFrames = 2;
+            return;
+        }
+        if (inputBlockFrames > 0)
+        {
+            inputBlockFrames--;
+            return;
+        }
+
         var gamepad = Gamepad.current;
         var keyboard = Keyboard.current;
 

@@ -318,7 +318,7 @@ public class ScoreManager : MonoBehaviour
         if (finalScoreText != null)
         {
             string rankMsg = (lastNewRank > 0) ? $"  【NEW! {lastNewRank}位】" : "";
-            finalScoreText.text = $"FINAL SCORE: {currentScore}{rankMsg}";
+            finalScoreText.text = $"FINAL SCORE: {currentScore}{rankMsg}\n(コンティニュー回数: {continueCount}回)";
         }
 
         if (rankingText != null)

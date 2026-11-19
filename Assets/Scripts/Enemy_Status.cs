@@ -6,7 +6,7 @@ using TMPro;
 
 public class Enemy_Status : MonoBehaviour
 {
-    public static List<int> Enemy_HP = new List<int> { 100, 200, 300, 400, 500 };
+    public static List<int> Enemy_HP = new List<int> { 1, 2, 3, 4, 5 };
     public static List<int> Enemy_ATK = new List<int> { 10, 15, 20, 30, 50 };
     public static bool isGameClear = false;
 

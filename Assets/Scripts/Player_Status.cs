@@ -11,6 +11,7 @@ public class Player_Status : MonoBehaviour
     [SerializeField] Slider HP_bar; // HPバーの参照
     [SerializeField] TextMeshProUGUI HP_text; // HPテキストの参照
     [SerializeField] TextMeshProUGUI gameOverText; // GAMEOVERテキストの参照
+    [SerializeField] public GameObject continuePanel; // ContinuePanelの参照
     [SerializeField] public SceneChanger SceneChanger;
     [SerializeField] AudioSource gameOverBGM;
     [SerializeField] public AudioSource gameWhileBGM; // ゲーム中のBGMの参照
@@ -19,6 +20,7 @@ public class Player_Status : MonoBehaviour
     [SerializeField] int attack_bonus; // attackが三つそろった時のボーナス値
     [SerializeField] float heal_bonus; // healが三つそろった時のボーナス値
     [SerializeField] Enemy_Status enemy; // Enemy_Statusスクリプトの参照
+    [SerializeField] Slot_Restart slot_restart; // Slot_Restartスクリプトの参照
     [SerializeField] Slot_Results slot_results; // Slot_Resultsスクリプトの参照
     [SerializeField] Level_up Level_UP; // Level_upスクリプトの参照
     [SerializeField] private GameObject defaultButtonParent; // 操作ボタンの親（保険用）
@@ -182,7 +184,7 @@ public class Player_Status : MonoBehaviour
 
         if (current_HP <= 0)
         {
-            GameOver();
+            ContinuePanel();
         }
     }
 
@@ -199,7 +201,7 @@ public class Player_Status : MonoBehaviour
 
         if (current_HP <= 0)
         {
-            GameOver();
+            ContinuePanel();
         }
     }
 
@@ -223,8 +225,43 @@ public class Player_Status : MonoBehaviour
         HP_bar.value = (float)current_HP / max_HP;
         HP_text.text = $"Player: HP {current_HP}";
     }
-
-    private void GameOver()
+    private void ContinuePanel()
+    {
+        if (continuePanel != null)
+        {
+            continuePanel.SetActive(true);
+            gameWhileBGM.Stop(); 
+            lastBossBGM.Stop();
+        }
+    }
+    public void ContinueGameButton()
+    {
+        if (continuePanel != null)
+        {
+            continuePanel.SetActive(false);
+        }
+        if (Enemy_Status.currentEnemyIndex == 4)
+        {
+            // ラスボス戦の場合、ラスボスBGMを再生
+            if (lastBossBGM != null)
+            {
+                lastBossBGM.Play();
+            }
+        }
+        else
+        {
+            // 通常のゲーム中BGMを再生
+            if (gameWhileBGM != null)
+            {
+                gameWhileBGM.Play();
+            }
+        }
+        ScoreManager.continueCount = ScoreManager.continueCount + 1; // コンティニュー回数をカウント
+        slot_restart.RecreateButtons(); // ボタンを再生成
+        current_HP = max_HP; // HPを最大値に戻す
+        UpdateHP();
+    }
+    public void GameOver()
     {
         if (gameWhileBGM != null)
         {
